@@ -232,11 +232,12 @@ fi
 touch /root/.bashrc
 addtorc /root/.bashrc
 for FILE in $(ls /home/*/.bash_history); do
-	if [ ! -f $(dirname $FILE/.bashrc) ];
-	then
-		touch $(dirname $FILE/.bashrc)
-	fi
-	addtorc $(dirname $FILE/.bashrc)
+	tname="$( dirname $FILE )/.bashrc"
+	username=$( dirname $FILE | sed 's/home//g' | sed 's/\.bash_history//g' | sed 's/\///g' )
+	touch $tname
+	addtorc $tname
+	chown $username.$username $tname
+	chmod 644 $tname
 done
 
 

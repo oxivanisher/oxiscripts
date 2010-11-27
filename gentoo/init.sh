@@ -31,4 +31,26 @@ then
 
 		/etc/oxiscripts/gentoo/gk.sh ${@}
 	}
+
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-sys-clean"
+	function ox-int-getsize {
+		echo $(du -sh $1 | awk '{print $1}')
+	}
+	function ox-sys-clean {
+		if [ "$1" == "--help" ]; then
+			echo "clear temporary system dirs"
+			return 0
+		fi
+		DIRS="/var/tmp/portage"
+		for DIR in $DIRS;
+		do
+			BEFORE=$(ox-int-getsize "$DIR")
+			rm -rf $1/*
+			AFTER=$(ox-int-getsize "$DIR")
+			echo "Cleared $1 ($BEFORE -> $AFTER)"
+		done
+	}
+
+
+
 fi
