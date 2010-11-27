@@ -1,7 +1,29 @@
 #!/bin/bash
 #$( echo $0 | sed s/$(basename $0)//g )
-. /etc/oxiscripts/setup.sh
+. /etc/oxiscripts/functions.sh
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
+
+function mountbackup {
+    while $(test -f /var/run/oxiscripts-backup.pid); do sleep 10; done
+    echo $$ > /var/run/oxiscripts-backup.pid
+    
+    # please set your mount options
+    # examples:
+    # NFS	MOUNTO=$(mount -t nfs 192.168.1.1:/path/to/backup $BACKUPDIR 2>&1) 
+    # FOLDER	MOUNTO=""
+    # VBOX SF   MOUNTO=$(mount.vboxsf backup $BACKUPDIR 2>&1)
+    MOUNTO=""
+}
+
+function umountbackup {
+
+    # please set your umount options
+    # examples:
+    # NFS	MOUNTO=$(umount $BACKUPDIR 2>&1) 
+    # FOLDER	MOUNTO=""
+    UMOUNTO=""
+    rm /var/run/oxiscripts-backup.pid
+}
 
 function rdiffbackup {
     mountbackup
@@ -13,12 +35,12 @@ function rdiffbackup {
 
     PARAMETER=""
     for DIR in ${EXCLUDED_DIR}; do
-	PARAMETER="$PARAMETER--exclude $DIR "
+			PARAMETER="$PARAMETER--exclude $DIR "
     done
 
 
-    RDIFF1O=$($(which rdiff-backup) $PARAMETER $1 $FOLDERNAME 2>/dev/null)
-    RDIFF2O=$($(which rdiff-backup) --force --remove-older-than $3 $1 2>/dev/null)
+    RDIFF1O=$( $( which rdiff-backup 2>/dev/null ) $PARAMETER $1 $FOLDERNAME 2>/dev/null)
+    RDIFF2O=$( $( which rdiff-backup 2>/dev/null ) --force --remove-older-than $3 $1 2>/dev/null)
 
     SIZEF=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$2)
     SIZEH=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/)
@@ -52,7 +74,7 @@ function rdiffbackup {
     SIZE="size total:\t$SIZET\nsize host:\t$SIZEH\nsize fabric:\t$SIZEF"
 
     if [ $DEBUG -gt 0 ]; then
-        notifyadmin "$(hostname) $2 rdiff-backup" "-- FILES IN $FOLDERNAME --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$RDIFF1O\n$RDIFF2O\n$MOUNTO$UMOUNTO$MKDIRO\n$CHOWNO"
+        ox-base-notifyadmin "$(hostname) $2 rdiff-backup" "-- FILES IN $FOLDERNAME --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$RDIFF1O\n$RDIFF2O\n$MOUNTO$UMOUNTO$MKDIRO\n$CHOWNO"
     fi
 }
 
@@ -96,7 +118,7 @@ function backup {
     SIZE="size total:\t$SIZET\nsize host:\t$SIZEH\nsize fabric:\t$SIZEF"
     
     if [ $DEBUG -gt 0 ]; then    
-	notifyadmin "$(hostname) $2 backup" "-- FILES IN $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$TARO$MOUNTO$UMOUNTO$MKDIRO" 
+	ox-base-notifyadmin "$(hostname) $2 backup" "-- FILES IN $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$TARO$MOUNTO$UMOUNTO$MKDIRO" 
     fi
 }
 
@@ -110,17 +132,17 @@ function rsyncbackup {
     done
 
 	if [ -z "$RSYNCPASSWORD" ]; then
-		RSYNCO=$($(which rsync) -avh --delete ${PARAMETER} $1 $2)
+		RSYNCO=$($( which rsync 2>/dev/null ) -avh --delete ${PARAMETER} $1 $2)
 	else
 		echo "$RSYNCPASSWORD" > /etc/oxiscripts/rsyncpw-$$.tmp
 		chmod 600 /etc/oxiscripts/rsyncpw-$$.tmp
 		#RSYNCO=
-		RSYNCO=$($(which rsync) -avh --delete $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp ${PARAMETER} $1 $2)
+		RSYNCO=$($( which rsync 2>/dev/null ) -avh --delete $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp ${PARAMETER} $1 $2)
 		rm /etc/oxiscripts/rsyncpw-$$.tmp
 	fi
 
     if [ $DEBUG -gt 0 ]; then
-        notifyadmin "$(hostname) $2 rsync-backup" "-- DEBUG INFOS --\n$RSYNCO"
+        ox-base-notifyadmin "$(hostname) $2 rsync-backup" "-- DEBUG INFOS --\n$RSYNCO"
     fi
     rm /var/run/oxiscripts-rsyncbackup.pid
 }
@@ -153,7 +175,7 @@ function backupinfo {
 	fi
 
 
-    notifyadmin "$(hostname) backup info (uptime: $(uptime))" "-- $(hostname) backup usage --\n\n$SIZET\n$SIZEH\n\n-- fabrics --\n$SIZEF"
+    ox-base-notifyadmin "$(hostname) backup info (uptime: $(uptime))" "-- $(hostname) backup usage --\n\n$SIZET\n$SIZEH\n\n-- fabrics --\n$SIZEF"
 
     umountbackup
 }
@@ -161,7 +183,7 @@ function backupinfo {
 function backupcleanup {
     mountbackup
     
-    if [ -n $(which fdupes) ]; then
+    if [ -n $( which fdupes 2>/dev/null ) ]; then
         SIZEBEFORE=$(du -sh $BACKUPDIR/oxibackup/$(hostname))
 	COUNT=0
         for FILE in $(fdupes -r -f -q $BACKUPDIR/oxibackup/$(hostname)); do
@@ -171,7 +193,7 @@ function backupcleanup {
 	SIZEAFTER=$(du -sh $BACKUPDIR/oxibackup/$(hostname))
 
         if [ $COUNT -gt 0 ]; then
-	    notifyadmin "$(hostname) backup cleanup" "-- $(hostname) backup cleanup --\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
+	    ox-base-notifyadmin "$(hostname) backup cleanup" "-- $(hostname) backup cleanup --\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
         fi
     else
 	nofityadmin "backup cleanup FAIL" "please install fdupes!"

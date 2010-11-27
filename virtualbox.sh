@@ -1,22 +1,13 @@
 #!/bin/bash
-#
-# This file is sourced by all *interactive* bash shells on startup,
-# including some apparently interactive shells such as scp and rcp
-# that can't tolerate any output.  So make sure this doesn't display
-# anything or bad things will happen !
 
+#. /etc/oxiscripts/functions.sh
 
-# SETUP!
-
-# Test for an interactive shell.  There is no need to set anything
-# past this point for scp and rcp, and it's important to refrain from
-# outputting anything in those cases.
-##[ -z "$PS1" ] && return
-
-
-##. /etc/oxiscripts/setup.sh
-
-function oxivbox-get-vms {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-get-vms"
+function ox-vbox-get-vms {
+	if [ "$1" == "--help" ]; then
+		echo "placeholder"
+		return 0
+	fi
 	for USER in $(ls /home);
 	do
 		for VM in $(ls -1 --color=never /home/$USER/.VirtualBox/Machines);
@@ -26,11 +17,21 @@ function oxivbox-get-vms {
 	done
 }
 
-function oxivbox-get-running-vms {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-get-running-vms"
+function ox-vbox-get-running-vms {
+	if [ "$1" == "--help" ]; then
+		echo "placeholder"
+		return 0
+	fi
 	ps aux | grep virtualbox/VBoxHeadless | grep -v grep | awk '{print $1"\t"$NF}'
 }
 
-function oxivbox-start-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-start-vm"
+function ox-vbox-start-vm {
+	if [ "$1" == "--help" ]; then
+		echo "placeholder"
+		return 0
+	fi
 	mycount=0
 	for VM in $(find /home -name $1 -type d);
 	do
@@ -41,10 +42,10 @@ function oxivbox-start-vm {
 		if [[ $EUID -ne 0 ]]; then
 			if [[ "$myuser" == "$(whoami)"  ]]; then
 				myuser=$(whoami)
-				$(which screen) -dmS $vmname-$myuser $(which VBoxHeadless) -s $vmname
+				$( which screen 2>/dev/null) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname
 			fi
 		else
-			su $myuser -c "$(which screen) -dmS $vmname-$myuser $(which VBoxHeadless) -s $vmname" 
+			su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname" 
 		fi
 	done
 
@@ -54,7 +55,12 @@ function oxivbox-start-vm {
 	fi
 }
 
-function oxivbox-stop-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-stop-vm"
+function ox-vbox-stop-vm {
+	if [ "$1" == "--help" ]; then
+		echo "placeholder"
+		return 0
+	fi
     mycount=0
     for VM in $(find /home -name $1 -type d);
     do
@@ -65,10 +71,10 @@ function oxivbox-stop-vm {
         if [[ $EUID -ne 0 ]]; then
             if [[ "$myuser" == "$(whoami)"  ]]; then
                 myuser=$(whoami)
-                $(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton
+                $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton
             fi
         else
-            su $myuser -c "$(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton" 
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton" 
         fi
     done
 
@@ -79,7 +85,12 @@ function oxivbox-stop-vm {
 
 }
 
-function oxivbox-reset-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-reset-vm"
+function ox-vbox-reset-vm {
+	if [ "$1" == "--help" ]; then
+		echo "placeholder"
+		return 0
+	fi
     mycount=0
     for VM in $(find /home -name $1 -type d);
     do
@@ -90,10 +101,10 @@ function oxivbox-reset-vm {
         if [[ $EUID -ne 0 ]]; then
             if [[ "$myuser" == "$(whoami)"  ]]; then
                 myuser=$(whoami)
-                $(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset
+                $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset
             fi
         else
-            su $myuser -c "$(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset" 
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset" 
         fi
     done
 
@@ -104,7 +115,12 @@ function oxivbox-reset-vm {
 
 }
 
-function oxivbox-kill-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-kill-vm"
+function ox-vbox-kill-vm {
+	if [ "$1" == "--help" ]; then
+		echo "placeholder"
+		return 0
+	fi
     mycount=0
     for VM in $(find /home -name $1 -type d);
     do
@@ -115,10 +131,10 @@ function oxivbox-kill-vm {
         if [[ $EUID -ne 0 ]]; then
             if [[ "$myuser" == "$(whoami)"  ]]; then
                 myuser=$(whoami)
-                $(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff
+                $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff
             fi
         else
-            su $myuser -c "$(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff"
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff"
         fi
     done
 
@@ -131,12 +147,17 @@ function oxivbox-kill-vm {
 
 
 
-#oxivbox-addonsisoupdate
-function oxivbox-addonsisoupdate {
+#ox-vbox-addonsisoupdate
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-addonsisoupdate"
+function ox-vbox-addonsisoupdate {
+	if [ "$1" == "--help" ]; then
+		echo "placeholder"
+		return 0
+	fi
 	BACKUPIFS=$IFS
 	IFS=$'\n'
 	echo -e "Searching for VM's"
-	for VM in $(oxivbox-get-vms);
+	for VM in $(ox-vbox-get-vms);
 	do
 		myuser=$(echo $VM | awk '{print $1}')
 		myvm=$(echo $VM | awk '{print $2}')
@@ -172,7 +193,7 @@ function oxivbox-addonsisoupdate {
    	BACKUPIFS=$IFS
 	IFS=$'\n'
  	echo -e "Searching for VM's"
-    for VM in $(oxivbox-get-vms);
+    for VM in $(ox-vbox-get-vms);
     do
         myuser=$(echo $VM | awk '{print $1}')
         myvm=$(echo $VM | awk '{print $2}')
