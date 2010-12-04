@@ -9,7 +9,7 @@ function ox-usr-checksite {
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-tool-replace"
 function ox-tool-replace {
 	if [ "$1" == "--help" ]; then
-		echo "replace in file search replace"
+		echo "replace in FILE SEARCH REPLACE"
 		return 0
 	fi
 

@@ -84,8 +84,10 @@ then
     PATH=${PATH}:/etc/oxiscripts/user/ 
 fi
 
-unset -f ox-int-register-function
-# expanding bash history size
+# Removing internal functions
+unset -f ox-zint-register-function
+
+## expanding bash history size
 export HISTSIZE=10000
 # Try to keep environment pollution down, EPA loves us.
 unset use_color safe_term match_lhsnuf

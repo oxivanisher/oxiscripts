@@ -15,6 +15,10 @@ echo -e "Copying files to $OXIRELEASEDIR: \c"
 	cp -r * $OXIRELEASEDIR
 echo -e "Done\n"
 
+echo -e "Clearing some tmp files: \c"
+	find $OXIRELEASEDIR -name "*.swp" -exec rm {} \;
+echo -e "Done\n"
+
 echo -e "Removing temp files in $OXIRELEASEDIR: \c"
 	rm $OXIRELEASEDIR/setup_pure.sh
 	rm $OXIRELEASEDIR/install_pure.sh

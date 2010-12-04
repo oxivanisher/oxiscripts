@@ -60,14 +60,24 @@ then
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade"
 	function ox-root-upgrade {
 		if [ "$1" == "--help" ]; then
+			ox-root-upgrade-1 || exit 1
+			ox-root-upgrade-2 || exit 2
+			return 0
+		fi
+		aptitude upgrade
+	}
+
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-2"
+	function ox-root-upgrade-2 {
+		if [ "$1" == "--help" ]; then
 			echo "aptitude upgrade"
 			return 0
 		fi
 		aptitude upgrade
 	}
 
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-update"
-	function ox-root-update {
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-1"
+	function ox-root-upgrade-1 {
 		if [ "$1" == "--help" ]; then
 			echo "aptitude update"
 			return 0

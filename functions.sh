@@ -22,7 +22,7 @@ function ox-help {
 	done
 	max_len=$(( $max_len + 2 ))
 
-	echo -e "${BLUE}Available oXiScript functions:${NC}"
+	echo -e "${BLUE}Available oXiScript functions ${blue}(release $OXIRELEASE)${NC}"
 	save=""
 	for MODULE in ${FUNCTS}
 	do
@@ -39,10 +39,10 @@ function ox-help {
 	echo -e ""
 }
 
-export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-get"
-function ox-base-get {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-show"
+function ox-base-show {
 	if [ "$1" == "--help" ]; then
-		echo "get configuration variables"
+		echo "show configuration variables"
 		return 0
 	fi
 
@@ -70,13 +70,42 @@ function ox-base-notifyadmin {
 	echo -e "$2" | $MAILCOMMAND -s "$1 ($SOURCE)" $ADMINMAIL
 }
 
-export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-showrelease"
-function ox-base-showrelease {
-	if [ "$1" == "--help" ]; then
-		echo "show release version ($OXIRELEASE)"
-		return 0
-	fi
-	echo -e "oXiScripts Release: $OXIRELEASE ($(echo $OXIRELEASE|awk '{print strftime("%c", $1)}'))"
+function ox-zint-log {
+	logger "$(whoami)@OX: ${@}"
+}
+
+function ox-zint-notify {
+	mystring=${@}
+	length=$(( ${#mystring} + 3 ))
+	line=""
+	for (( i=0; i<=$length; i++ ))
+	do
+		line="${line}-"
+	done
+	echo -e "\n${BLUE}$line${NC}"
+	echo -e "${BLUE}| ${cyan}$mystring ${BLUE}|${NC}"
+	echo -e "${BLUE}$line${NC}\n"
+}
+
+function ox-zint-alert {
+	ox-zint-log "${@}"
+	mystring=${@}
+	length=$(( ${#mystring} + 3 ))
+	line=""
+	for (( i=0; i<=$length; i++ ))
+	do
+		line="${line}#"
+	done
+	echo -e "\n${BLUE}$line${NC}"
+	echo -e "${BLUE}# ${RED}$mystring ${BLUE}#${NC}"
+	echo -e "${BLUE}$line${NC}\n"
+}
+
+function ox-zint-run {
+	runts=$(date +%s)
+	ox-zint-alert "Running: ${@}"
+	${@}
+	ox-zint-notify "Command took $(( $(date +%s) - $runts )) seconds."
 }
 
 # Load root functions
@@ -86,7 +115,7 @@ then
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-update"
 	function ox-base-update {
 		if [ "$1" == "--help" ]; then
-			echo "updates oxiscripts from mirror"
+			echo "update from $OXIMIRROR"
 			return 0
 		fi
 
@@ -131,7 +160,7 @@ then
 	function ox-base-set {
 		. /etc/oxiscripts/setup.sh
 		if [ "$1" == "--help" ]; then
-			echo "set configuration variable"
+			echo "set configuration OPTION"
 			return 0
 		fi
 
