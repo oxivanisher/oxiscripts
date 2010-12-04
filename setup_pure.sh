@@ -1,15 +1,29 @@
 #!/bin/bash
 
-#setup some vars!
-export ADMINMAIL=root@yournet.com
-export BACKUPDIR=/mnt/backup/
-export DEBUG=0
+# your email address
+export ADMINMAIL=root@localhost
+
+# where do you keep your own scripts
 export SCRIPTSDIR=$HOME/scripts
-export OXIMIRROR=http://www.mittelerde.ch/install.sh
 
 
 
+# your backup mountpoint
+export BACKUPDIR=/mnt/backup/
 
-export OXIRELEASE=xxx
+# your mail command
 export MAILCOMMAND=$( which mailx 2>/dev/null )
 
+
+
+# should the output be colorful? (0/1)
+export OXICOLOR=1
+
+# generate debug output (0/1)
+export DEBUG=0
+
+# the mirror for update
+export OXIMIRROR=http://www.mittelerde.ch/install.sh
+
+# do not change the release number
+export OXIRELEASE=xxx

@@ -6,8 +6,8 @@ function ox-usr-checksite {
 	/etc/oxiscripts/user/checksite.sh ${@}
 }
 
-export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-usr-replace"
-function ox-usr-replace {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-tool-replace"
+function ox-tool-replace {
 	if [ "$1" == "--help" ]; then
 		echo "replace in file search replace"
 		return 0

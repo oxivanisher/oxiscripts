@@ -57,8 +57,8 @@ fi
 # root only functions
 if [[ $EUID -eq 0 ]];
 then
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-sys-upgrade"
-	function ox-sys-upgrade {
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade"
+	function ox-root-upgrade {
 		if [ "$1" == "--help" ]; then
 			echo "aptitude upgrade"
 			return 0
@@ -66,8 +66,8 @@ then
 		aptitude upgrade
 	}
 
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-sys-update"
-	function ox-sys-update {
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-update"
+	function ox-root-update {
 		if [ "$1" == "--help" ]; then
 			echo "aptitude update"
 			return 0

@@ -4,8 +4,18 @@
 # root only functions
 if [[ $EUID -eq 0 ]];
 then
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-sys-upgrade"
-	function ox-sys-upgrade {
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade"
+	function ox-root-upgrade {
+		if [ "$1" == "--help" ]; then
+			echo "emerge --sync && emerge --update --deep --newuse world -av"
+			return 0
+		fi
+		ox-root-upgrade-1
+		ox-root-upgrade-2
+	}
+
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-2"
+	function ox-root-upgrade-2 {
 		if [ "$1" == "--help" ]; then
 			echo "emerge --update --deep --newuse world -av"
 			return 0
@@ -13,8 +23,8 @@ then
 		emerge --update --deep --newuse world -av
 	}
 
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-sys-update"
-	function ox-sys-update {
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-1"
+	function ox-root-upgrade-1 {
 		if [ "$1" == "--help" ]; then
 			echo "emerge --sync"
 			return 0
@@ -22,8 +32,8 @@ then
 		emerge --sync
 	}
 
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-sys-genkernel"
-	function ox-sys-genkernel {
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-genkernel"
+	function ox-root-genkernel {
 		if [ "$1" == "--help" ]; then
 			echo "create new kernel image"
 			return 0
@@ -32,11 +42,11 @@ then
 		/etc/oxiscripts/gentoo/gk.sh ${@}
 	}
 
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-sys-clean"
+	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-clean"
 	function ox-int-getsize {
 		echo $(du -sh $1 | awk '{print $1}')
 	}
-	function ox-sys-clean {
+	function ox-root-clean {
 		if [ "$1" == "--help" ]; then
 			echo "clear temporary system dirs"
 			return 0

@@ -9,15 +9,34 @@ function ox-help {
 		return 0
 	fi
 
+	echo -e ""
+	#${#str_var}
+	max_len=0
+	FUNCTS=$( echo $OXISCRIPTSFUNCTIONS | sed 's/:/\n/g' | sort )
+	for MODULE in ${FUNCTS}
+	do
+		if [ ${#MODULE} -gt $max_len ];
+		then
+			max_len=${#MODULE}
+		fi
+	done
+	max_len=$(( $max_len + 2 ))
+
 	echo -e "${BLUE}Available oXiScript functions:${NC}"
-	FUNCTS=$( echo $OXISCRIPTSFUNCTIONS | sed 's/:/ /g' )
+	save=""
 	for MODULE in ${FUNCTS}
 	do
 		if [ "$MODULE" != "" ];
 		then
-			echo -e "${red}$MODULE\t\t\t${cyan}$( $MODULE --help )${NC}"
+			if [ "${MODULE:0:6}" != "$save" ];
+			then
+				save="${MODULE:0:6}"
+				echo -e ""
+			fi
+			printf "${CYAN}%-${max_len}s ${cyan}%s \n${NC}"  "$MODULE" "$( $MODULE --help )"
 		fi
 	done
+	echo -e ""
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-get"
@@ -33,6 +52,7 @@ function ox-base-get {
 	echo -e "DEBUG\t\t$DEBUG"
 	echo -e "SCRIPTSDIR\t$SCRIPTSDIR"
 	echo -e "OXIMIRROR\t$OXIMIRROR"
+	echo -e "OXICOLOR\t$OXICOLOR"
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-notifyadmin"
@@ -116,11 +136,11 @@ then
 		fi
 
 		if [[ ${EUID} != 0 ]] ; then
-			echo -e "This function must be run as root. Sorry!"
+			echo -e "${RED}This function must be run as root. Sorry!${NC}"
 		else
 			case "$1" in
 				debug)
-					echo -e "Toggling DEBUG to: \c"
+					echo -e "${cyan}Toggling ${CYAN}DEBUG to: \c"
 					if [ $DEBUG -eq 0 ]; then
 						echo -e "${RED}Enabled${NC}"
 						sed 's/DEBUG=0/DEBUG=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
@@ -132,32 +152,46 @@ then
 					fi
 				;;
 
+				color)
+					echo -e "${cyan}Toggling ${CYAN}COLOR to: \c"
+					if [ $OXICOLOR -eq 0 ]; then
+						echo -e "${RED}Enabled${NC}"
+						sed 's/OXICOLOR=0/OXICOLOR=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+					else
+						echo -e "${BLUE}Disabled${NC}"
+						sed 's/OXICOLOR=1/OXICOLOR=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+					fi
+				;;
+
 				mirror)
 					if [ -n "$2" ]; then
-						echo -e "Setting MIRROR to: ${RED}$2${NC}"
+						echo -e "${cyan}Setting MIRROR to: ${RED}$2${NC}"
 						sed "s|OXIMIRROR=$(echo $OXIMIRROR)|OXIMIRROR=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
 						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
 					else
-						echo -e "Please add a URL"
+						echo -e "${RED}Please add a URL${NC}"
 					fi
 				;;
 
 				mail)
 					if [ -n "$2" ]; then
-						echo -e "Setting MAIL to: ${RED}$2${NC}"
+						echo -e "${cyan}Setting MAIL to: ${RED}$2${NC}"
 						sed "s|ADMINMAIL=$(echo $ADMINMAIL)|ADMINMAIL=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
 						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
 					else
-						echo -e "Please add a Email Adress"
+						echo -e "${RED}Please add a Email Adress${NC}"
 					fi
 				;;
 
 				*)
-					echo -e "No corresponding keyword found: $1"
-					echo -e "\tPossible are: debug, mirror and mail"
+					echo -e "${RED}No corresponding keyword found: $1${NC}"
+					echo -e "\t${CYAN}Possible are: debug, color, mirror and mail${NC}"
 				;;
 
 			esac
+			echo -e "${red}Only new spawned enviroments have the variable set. Please relog.${NC}"
 		fi
 	}
 

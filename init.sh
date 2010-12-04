@@ -27,7 +27,7 @@ shopt -s histappend
 
 # Get LSB ID and load distribution specific init.sh
 LSBID="unsupported"
-case "$(lsb_release -is)" in
+case "$( lsb_release -is)" in
 	Debian|Ubuntu)
 		export LSBID="debian"
 	;;
@@ -51,13 +51,24 @@ fi
 
 
 #Setting some colors :)
-red='\e[0;31m'
-RED='\e[1;31m'
-blue='\e[0;34m'
-BLUE='\e[1;34m'
-cyan='\e[0;36m'
-CYAN='\e[1;36m'
-NC='\e[0m' # No Color
+if [ "$OXICOLOR" == "1" ];
+then
+	red='\e[0;31m'
+	RED='\e[1;31m'
+	blue='\e[0;34m'
+	BLUE='\e[1;34m'
+	cyan='\e[0;36m'
+	CYAN='\e[1;36m'
+	NC='\e[0m' # No Color
+else
+	red=''
+	RED=''
+	blue=''
+	BLUE=''
+	cyan=''
+	CYAN=''
+	NC=''
+fi
 
 # Add scripts dir to $PATH
 if [ -e $HOME/scripts/ ];
