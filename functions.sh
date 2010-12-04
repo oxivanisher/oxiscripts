@@ -71,7 +71,10 @@ function ox-base-notifyadmin {
 }
 
 function ox-zint-log {
-	logger "$(whoami)@OX: ${@}"
+	if [ -n "${@}" ]
+	then
+		logger "$(whoami)@OX: ${@}"
+	fi
 }
 
 function ox-zint-notify {
