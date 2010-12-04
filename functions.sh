@@ -71,9 +71,10 @@ function ox-base-notifyadmin {
 }
 
 function ox-zint-log {
-	if [ -n "${@}" ]
+	mystring=${@}
+	if [ -n "$mystring" ];
 	then
-		logger "$(whoami)@OX: ${@}"
+		logger -t "$(whoami)@OX" "$mystring"
 	fi
 }
 
@@ -91,7 +92,7 @@ function ox-zint-notify {
 }
 
 function ox-zint-alert {
-	ox-zint-log "${@}"
+	ox-zint-log ${@}
 	mystring=${@}
 	length=$(( ${#mystring} + 3 ))
 	line=""
