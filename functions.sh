@@ -102,7 +102,7 @@ then
 		echo -e "${CYAN}Done"
 
 		echo -e "${cyan}MD5 Checksum:\t\c"
-		if [ "$(md5sum /tmp/$(basename $OXIMIRROR) | awk '{print $1}')" = "$(cat /tmp/$(basename $OXIMIRROR).md5 | awk '{print $1}')" ]; then
+		if [ "$( $(which md5sum) /tmp/$(basename $OXIMIRROR) | awk '{print $1}')" = "$(cat /tmp/$(basename $OXIMIRROR).md5 | awk '{print $1}')" ]; then
 			echo -e "${CYAN}OK${NC}"
 
 			chmod +x /tmp/$(basename $OXIMIRROR)
@@ -110,12 +110,12 @@ then
 			echo -e "${cyan}Actual Release:\t${CYAN}$OXIRELEASE${NC}\n${cyan}New Release:\t${CYAN}$INSTALLOXIRELEASE${NC}"
 	
 			if [ "$OXIRELEASE" -lt "$INSTALLOXIRELEASE" ]; then
-				echo -e "${BLUE}--- Updating oXiScripts ---${NC}"
+				echo -e "\n${RED}--- Initiating oXiScripts update ---${NC}"
 				/tmp/install.sh
 				. /etc/oxiscripts/init.sh
 			elif [ "$OXIRELEASE" -eq "$INSTALLOXIRELEASE" ]; then
 				echo -e "${BLUE}You have already the newest version. :)${NC}"
-				echo -e "If you like to reinstall oxiscripts, please run /tmp/$(basename $OXIMIRROR)"
+				echo -e "${cyan}If you like to reinstall oxiscripts, please run ${CYAN}/tmp/$(basename $OXIMIRROR)${NC}"
 			elif [ "$OXIRELEASE" -gt "$INSTALLOXIRELEASE" ]; then
 				echo -e "\n${RED}Your mirror is old or you have messed around with OXIRELEASE in /etc/oxiscripts/setup.sh${NC}\n"
 			else

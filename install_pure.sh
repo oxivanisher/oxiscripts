@@ -14,8 +14,8 @@ cyan='\e[0;36m'
 CYAN='\e[1;36m'
 NC='\e[0m' # No Color
 
-echo -e "\n${BLUE}oXiScripts Setup! (oxi@mittelerde.ch)${NC}"
-echo -e "${blue}--- Installing release: $INSTALLOXIRELEASE ---${NC}"
+echo -e "\n${BLUE}oxiscripts install (oxi@mittelerde.ch)${NC}"
+echo -e "${cyan}--- Installing release: ${CYAN}$INSTALLOXIRELEASE${cyan} ---${NC}"
 
 if [[ $EUID -ne 0 ]];
 then
@@ -73,13 +73,13 @@ if [ -z "$( which uudecode 2>/dev/null )" ]; then
 	fi
 fi
 
-echo -e "${cyan}Creating ${CYAN}$TARGETDIR: ${NC}\c"
+echo -e "${cyan}Creating ${CYAN}$TARGETDIR${cyan}: ${NC}\c"
 	mkdir -p $TARGETDIR/install
 	mkdir -p $TARGETDIR/jobs
 	mkdir -p $TARGETDIR/debian
 	mkdir -p $TARGETDIR/gentoo
 	mkdir -p $TARGETDIR/user
-echo -e "${cyan}Done${NC}"
+echo -e "${CYAN}Done${NC}"
 
 echo -e "${cyan}Extracting files: \c"
 	match=$(grep --text --line-number '^PAYLOAD:$' $0 | cut -d ':' -f 1)
@@ -94,7 +94,7 @@ function movevar {
 	if [  -n "$oldvar" ]; then
 		sed -e "s|$newvar|$oldvar|g" $TARGETDIR/$1.new > $TARGETDIR/$1.tmp
 		mv $TARGETDIR/$1.tmp $TARGETDIR/$1.new
-		echo -e "  ${cyan}$1:  ${CYAN}$oldvar${NC}"
+		echo -e "  ${cyan}$1:  ${CYAN}$( echo $oldvar | sed 's/export //g' )${NC}"
 	fi
 }
 
@@ -157,7 +157,7 @@ rmdir $TARGETDIR/install/jobs/
 find $TARGETDIR/install/ -maxdepth 1 -type f -exec mv {} $TARGETDIR \;
 rmdir $TARGETDIR/install
 
-echo -e "\n${cyan}Setting rights: \c"
+echo -e "\n${cyan}Setting permissions: \c"
 
 	chmod 640 $TARGETDIR/*.sh
 	chmod 755 $TARGETDIR/init.sh
@@ -171,8 +171,9 @@ echo -e "\n${cyan}Setting rights: \c"
 
 	chown -R root.root $TARGETDIR
 
-echo -e "${CYAN}Done${NC}"
+echo -e "${CYAN}Done${NC}\n"
 
+echo -e "${cyan}Enabling services${NC}"
 if [ "$LSBID" == "debian" ];
 then
 	if [ ! -e /etc/init.d/oxivbox ];
@@ -219,10 +220,18 @@ if [ $(which masqld 2>/dev/null ) ]; then
     ln -sf $TARGETDIR/jobs/backup-mysql.sh /etc/cron.daily/backup-mysql
 fi
 
+echo -e "\n${cyan}Activated services${NC}"
+for FILE in $( ls -l /etc/cron.*/* | grep /etc/oxiscripts/jobs/ | awk '{print $9}' | sort )
+do
+	shedule="$( echo $FILE | sed 's/\/etc\/cron\.//g' | sed 's/\// /g' | awk '{print $1}' )"
+	file="$( echo $FILE | sed 's/\/etc\/cron\.//g' | sed 's/\// /g' | awk '{print $2}' )"
+	printf "  ${CYAN}%-30s ${cyan}%s${NC}\n" $file $shedule
+done
+
 
 # add init.sh to all .bashrc files
 # (Currently doesn't support changing of the install dir!)
-echo -e "\n${cyan}Finding all .bashrc files to add init.sh:${NC}"
+echo -e "\n${cyan}Checking user profiles to add init.sh${NC}"
 function addtorc {
 	if [ ! -n "$(grep oxiscripts/init.sh $1)" ];
 	then
@@ -255,14 +264,16 @@ done
 
 install=""
 doit="0"
-echo -e "\n${cyan}Checking optional apps (These are only needed if you plan to use some of the modules/functions):\n  ${RED}\c"
+echo -e "\n${cyan}Checking optional apps\n  \c"
 BINS="rdiff-backup fdupes rsync mailx screen"
 for BIN in $BINS
 do
 	if [ ! -n "$(which $BIN 2>/dev/null )" ]; then
-		echo -e "$BIN \c"
+		echo -e "${RED}$BIN${NC} \c"
 		install="$install$BIN "
 		doit="1"
+	else
+		echo -e "${cyan}$BIN${NC} \c"
 	fi
 done
 echo -e "${NC}"
@@ -278,6 +289,6 @@ then
 	fi
 fi
 
-echo -e "\n${BLUE}Everything done.${NC}\n\n${RED}Please configure your jobs in $TARGETDIR/jobs!${NC}\n"
+echo -e "\n${BLUE}Everything done.${NC}\n"
 . /etc/oxiscripts/init.sh
 exit 0
