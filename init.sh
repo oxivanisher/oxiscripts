@@ -211,9 +211,9 @@ function oxivbox-addonsupdate {
 	fi
 	echo -e "Machine type: $MTYPE"
 
-	if [ -n "$(which aptitude)" ]; then
+	if [ -n "$(which apt-get)" ]; then
 		echo -e "You are on a Debian system. Automatically installing needed packages."
-		aptitude -y install build-essential linux-headers-$(uname -r)
+		apt-get -y install build-essential linux-headers-$(uname -r)
 	else
 		echo -e "You are NOT on a Debian system. Please check for all needed dependencies!"
 	fi
