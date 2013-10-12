@@ -44,6 +44,6 @@ echo -e "Making file executable: \c"
 echo -e "Done"
 
 echo -e "Copying file to webserver: \c"
-	cp install.* /var/www/munin
-	chmod 644 /var/www/munin/install.*
+	cp install.*  /home/oxi/oxi.ch_data/
+	chmod 644  /home/oxi/oxi.ch_data/install.*
 echo -e "Done"

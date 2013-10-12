@@ -110,12 +110,12 @@ function rsyncbackup {
     done
 
 	if [ -z "$RSYNCPASSWORD" ]; then
-		RSYNCO=$($(which rsync) -avh --delete ${PARAMETER} $1 $2)
+		RSYNCO=$($(which rsync) -avh $3 ${PARAMETER} $1 $2)
 	else
 		echo "$RSYNCPASSWORD" > /etc/oxiscripts/rsyncpw-$$.tmp
 		chmod 600 /etc/oxiscripts/rsyncpw-$$.tmp
 		#RSYNCO=
-		RSYNCO=$($(which rsync) -avh --delete $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp ${PARAMETER} $1 $2)
+		RSYNCO=$($(which rsync) -avh $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp ${PARAMETER} $1 $2)
 		rm /etc/oxiscripts/rsyncpw-$$.tmp
 	fi
 
