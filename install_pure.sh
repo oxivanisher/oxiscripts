@@ -26,9 +26,9 @@ fi
 echo -e "\n${cyan}Checking needed apps: \c"
 if [ -z "$( which lsb_release 2>/dev/null )" ];
 then
-	if [ -n "$( which aptitude 2>/dev/null )" ];
+	if [ -n "$( which apt-get 2>/dev/null )" ];
 	then
-		aptitude install lsb-release -P || exit 1
+		apt-get install lsb-release -qy || exit 1
 	elif [ -n "$( which emerge 2>/dev/null )" ];
 	then
 		emerge lsb-release -av || exit 1
@@ -61,8 +61,8 @@ fi
 if [ -z "$( which uudecode 2>/dev/null )" ]; then
 	if [ "$LSBID" == "debian" ];
 	then
-		echo -e "${RED}Installing uudecode (aptitude install sharutils)${NC}"
-		aptitude install sharutils -P || exit 1
+		echo -e "${RED}Installing uudecode (apt-get install sharutils)${NC}"
+		apt-get install sharutils -qy || exit 1
 	elif [ "$LSBID" == "gentoo" ];
 	then
 		echo -e "${RED}Installing uudecode (sharutils)${NC}"
@@ -106,7 +106,7 @@ if [ -e $TARGETDIR/setup.sh ]; then
 	movevar "setup.sh" '^export BACKUPDIR=.*$'
 	movevar "setup.sh" '^export DEBUG=.*$'
 	movevar "setup.sh" '^export SCRIPTSDIR=.*$'
-	movevar "setup.sh" '^export OXIMIRROR=.*$'
+#	movevar "setup.sh" '^export OXIMIRROR=.*$'
 	movevar "setup.sh" '^export OXICOLOR=.*$'
 
 	mv $TARGETDIR/setup.sh.new $TARGETDIR/setup.sh
@@ -114,16 +114,18 @@ else
 	mv $TARGETDIR/install/setup.sh $TARGETDIR/setup.sh
 fi
 
-if [ -e $TARGETDIR/backup.sh ]; then
-	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh.new
+#if [ -e $TARGETDIR/backup.sh ]; then
+#	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh.new
 
-	movevar "backup.sh" '^\s*MOUNTO=.*$'
-	movevar "backup.sh" '^\s*UMOUNTO=.*$'
+#	movevar "backup.sh" '^\s*MOUNTO=.*$'
+#	movevar "backup.sh" '^\s*UMOUNTO=.*$'
 
-	mv $TARGETDIR/backup.sh.new $TARGETDIR/backup.sh
-else
-	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
-fi
+#	mv $TARGETDIR/backup.sh.new $TARGETDIR/backup.sh
+#else
+#	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
+#fi
+
+mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
 
 #mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
 mv $TARGETDIR/install/init.sh $TARGETDIR/init.sh
@@ -264,7 +266,7 @@ done
 
 install=""
 doit="0"
-echo -e "\n${cyan}Checking optional apps\n  \c"
+echo -e "\n${cyan}Checking and installing optional apps\n  \c"
 BINS="rdiff-backup fdupes rsync mailx screen"
 for BIN in $BINS
 do
@@ -282,7 +284,7 @@ if [ "$doit" == "1" ];
 then
 	if [ "$LSBID" == "debian" ];
 	then
-		aptitude install $install -P
+		apt-get install -qy $install
 	elif [ "$LSBID" == "gentoo" ];
 	then
 		emerge $install -av

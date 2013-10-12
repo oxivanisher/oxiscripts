@@ -11,7 +11,10 @@ echo -e "\tEditing setup.sh with release: \c"
 echo -e "Done\n"
 
 echo -e "Copying files to $OXIRELEASEDIR: \c"
-	cp * $OXIRELEASEDIR
+	cp -r * $OXIRELEASEDIR
+#	cp debian/* $OXIRELEASEDIR
+#	cp gentoo/* $OXIRELEASEDIR
+#	cp jobs/* $OXIRELEASEDIR
 echo -e "Done\n"
 
 echo -e "Removing temp files in $OXIRELEASEDIR: \c"
@@ -20,11 +23,10 @@ echo -e "Removing temp files in $OXIRELEASEDIR: \c"
 	rm $OXIRELEASEDIR/make_release.sh
 	rm $OXIRELEASEDIR/install.sh 2>&1 
 	rm $OXIRELEASEDIR/install.sh.md5 2>&1 
-	rm $OXIRELEASEDIR/publish_release.sh
 echo -e "Done\n"
 
 echo -e "Creating oxiuserscripts.tar.gz2: \c"
-    tar -C ../oxiuserscripts -czf $OXIRELEASEDIR/oxiuserscripts.tar.gz2 .
+    tar -C user -czf $OXIRELEASEDIR/oxiuserscripts.tar.gz2 .
 echo -e "Done\n"
 
 echo -e "Creating definitive install.sh file:"
@@ -43,3 +45,6 @@ echo -e "Making file executable: \c"
 	chmod +x install.sh
 echo -e "Done"
 
+echo -e "Removing tmp dir: \c"
+	rm -rf $OXIRELEASEDIR
+echo -e "Done"

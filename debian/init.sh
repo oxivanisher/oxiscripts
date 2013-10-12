@@ -64,24 +64,24 @@ then
 			ox-root-upgrade-2 || exit 2
 			return 0
 		fi
-		aptitude upgrade
+		apt-get upgrade
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-2"
 	function ox-root-upgrade-2 {
 		if [ "$1" == "--help" ]; then
-			echo "aptitude upgrade"
+			echo "apt-get upgrade"
 			return 0
 		fi
-		aptitude upgrade
+		apt-get upgrade
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-1"
 	function ox-root-upgrade-1 {
 		if [ "$1" == "--help" ]; then
-			echo "aptitude update"
+			echo "apt-get update"
 			return 0
 		fi
-		aptitude update
+		apt-get update
 	}
 fi
