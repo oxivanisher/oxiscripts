@@ -57,7 +57,7 @@ start() {
 	log_daemon_msg "oxivbox booting"
 
 	lastuser=""
-	for VM in $(cat /etc/oxiscripts/init.d/oxivbox.conf);
+	for VM in $(cat /etc/oxiscripts/oxivbox.conf);
 	do
 		mycount=$(($mycount +1))
 		vmname=$(echo $VM | awk -F/ '{print $NF}')
@@ -73,10 +73,10 @@ start() {
 		if [[ $EUID -ne 0 ]]; then
 			if [[ "$myuser" == "$(whoami)"  ]]; then
 				myuser=$(whoami)
-				$(which screen) -dmS $vmname-$myuser $(which VBoxHeadless) -s $vmname
+				$( which screen 2>/dev/null ) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname
 			fi
 		else
-			su $myuser -c "$(which screen) -dmS $vmname-$myuser $(which VBoxHeadless) -s $vmname" 
+			su $myuser -c "$( which screen 2>/dev/null ) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname" 
 		fi
 	done
 

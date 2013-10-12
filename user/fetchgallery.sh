@@ -1,0 +1,28 @@
+#!/bin/bash
+
+BASEURL=http://www.someurl.com/gallery/img_
+ENDING=.jpg
+COUNTBEGIN=1
+COUNTEND=2000
+SAVEPATH=$HOME/Desktop/
+
+echo -e "\n"
+echo Fetching $BASEURL[$COUNTBEGIN-$COUNTEND]$ENDING
+echo to $SAVEPATH
+
+MYCOUNT=$COUNTBEGIN
+COUNTER=1
+
+mkdir -p $SAVEPATH
+cd $SAVEPATH
+
+while [ $MYCOUNT -le $COUNTEND ]
+do
+	echo fetching $COUNTER of $[$COUNTEND-$COUNTBEGIN+1]
+#$MYCOUNT, $COUNTBEGIN-$COUNTEND
+	wget -q $BASEURL$MYCOUNT$ENDING
+
+	MYCOUNT=$[$MYCOUNT+1]
+	COUNTER=$[$COUNTER+1]
+done
+

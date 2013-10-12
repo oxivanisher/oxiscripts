@@ -33,11 +33,11 @@ function backupvdi {
 	#FIXME restart the VM
 	if [ -n "$RUNNING" ]; then
 		beep -f 400 && beep -f 800
-		su $VDIUSER -c "$(which screen) -dmS $RUNNING $(which VBoxHeadless) -s $RUNNING"
+		su $VDIUSER -c "$( which screen 2>/dev/null ) -dmS $RUNNING $( which VBoxHeadless 2>/dev/null ) -s $RUNNING"
 	fi
 
     if [ $DEBUG -gt 0 ]; then
-        notifyadmin "$(hostname) $2 vdi-backup" "-- DEBUG INFOS --\n$VDIBACKUPO"
+        ox-base-notifyadmin "$(hostname) $2 vdi-backup" "-- DEBUG INFOS --\n$VDIBACKUPO"
     fi
     rm /var/run/oxiscripts-vdibackup.pid
 }

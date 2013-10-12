@@ -1,38 +1,42 @@
 #!/bin/bash
-#
-# This file is sourced by all *interactive* bash shells on startup,
-# including some apparently interactive shells such as scp and rcp
-# that can't tolerate any output.  So make sure this doesn't display
-# anything or bad things will happen !
 
+#. /etc/oxiscripts/functions.sh
 
-# SETUP!
-
-# Test for an interactive shell.  There is no need to set anything
-# past this point for scp and rcp, and it's important to refrain from
-# outputting anything in those cases.
-##[ -z "$PS1" ] && return
-
-
-##. /etc/oxiscripts/setup.sh
-
-function oxivbox-get-vms {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-get-vms"
+function ox-vbox-get-vms {
+	if [ "$1" == "--help" ]; then
+		echo "show the vms of all users expect root"
+		return 0
+	fi
 	for USER in $(ls /home);
 	do
-		for VM in $(ls -1 --color=never /home/$USER/.VirtualBox/Machines);
-		do
-			echo -e "$USER\t$VM"
-		done
+		if [ -e "/home/$USER/.VirtualBox/Machines" ];
+		then
+			echo -e "$(ls -1 --color=never /home/$USER/.VirtualBox/Machines)" | while read VM;
+			do
+				echo -e "$USER\t$VM"
+			done
+		fi
 	done
 }
 
-function oxivbox-get-running-vms {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-get-running-vms"
+function ox-vbox-get-running-vms {
+	if [ "$1" == "--help" ]; then
+		echo "show all running vms"
+		return 0
+	fi
 	ps aux | grep virtualbox/VBoxHeadless | grep -v grep | awk '{print $1"\t"$NF}'
 }
 
-function oxivbox-start-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-start-vm"
+function ox-vbox-start-vm {
+	if [ "$1" == "--help" ]; then
+		echo "start vm NAME"
+		return 0
+	fi
 	mycount=0
-	for VM in $(find /home -name $1 -type d);
+	for VM in $(find /home -name "$1" -type d);
 	do
 		mycount=$(($mycount +1))
 		vmname=$(echo $VM | awk -F/ '{print $NF}')
@@ -41,22 +45,27 @@ function oxivbox-start-vm {
 		if [[ $EUID -ne 0 ]]; then
 			if [[ "$myuser" == "$(whoami)"  ]]; then
 				myuser=$(whoami)
-				$(which screen) -dmS $vmname-$myuser $(which VBoxHeadless) -s $vmname
+				$( which screen 2>/dev/null) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname
 			fi
 		else
-			su $myuser -c "$(which screen) -dmS $vmname-$myuser $(which VBoxHeadless) -s $vmname" 
+			su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname" 
 		fi
 	done
 
 	if [ "$mycount" = "0" ];
 	then
-		echo -e "No VMS found with the name: $1"
+		echo -e "${RED}No VMS found with the name: $1${NC}"
 	fi
 }
 
-function oxivbox-stop-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-stop-vm"
+function ox-vbox-stop-vm {
+	if [ "$1" == "--help" ]; then
+		echo "stop vm NAME"
+		return 0
+	fi
     mycount=0
-    for VM in $(find /home -name $1 -type d);
+    for VM in $(find /home -name "$1" -type d);
     do
         mycount=$(($mycount +1))
         vmname=$(echo $VM | awk -F/ '{print $NF}')
@@ -65,23 +74,28 @@ function oxivbox-stop-vm {
         if [[ $EUID -ne 0 ]]; then
             if [[ "$myuser" == "$(whoami)"  ]]; then
                 myuser=$(whoami)
-                $(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton
+                $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton
             fi
         else
-            su $myuser -c "$(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton" 
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton" 
         fi
     done
 
     if [ "$mycount" = "0" ];
     then
-        echo -e "No VMS found with the name: $1"
+        echo -e "${RED}No VMS found with the name: $1${NC}"
    fi
 
 }
 
-function oxivbox-reset-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-reset-vm"
+function ox-vbox-reset-vm {
+	if [ "$1" == "--help" ]; then
+		echo "reset vm NAME"
+		return 0
+	fi
     mycount=0
-    for VM in $(find /home -name $1 -type d);
+    for VM in $(find /home -name "$1" -type d);
     do
         mycount=$(($mycount +1))
         vmname=$(echo $VM | awk -F/ '{print $NF}')
@@ -90,23 +104,28 @@ function oxivbox-reset-vm {
         if [[ $EUID -ne 0 ]]; then
             if [[ "$myuser" == "$(whoami)"  ]]; then
                 myuser=$(whoami)
-                $(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset
+                $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset
             fi
         else
-            su $myuser -c "$(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset" 
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset" 
         fi
     done
 
     if [ "$mycount" = "0" ];
     then
-        echo -e "No VMS found with the name: $1"
+        echo -e "${RED}No VMS found with the name: $1${NC}"
    fi
 
 }
 
-function oxivbox-kill-vm {
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-kill-vm"
+function ox-vbox-kill-vm {
+	if [ "$1" == "--help" ]; then
+		echo "kill vm NAME"
+		return 0
+	fi
     mycount=0
-    for VM in $(find /home -name $1 -type d);
+    for VM in $(find /home -name "$1" -type d);
     do
         mycount=$(($mycount +1))
         vmname=$(echo $VM | awk -F/ '{print $NF}')
@@ -115,28 +134,33 @@ function oxivbox-kill-vm {
         if [[ $EUID -ne 0 ]]; then
             if [[ "$myuser" == "$(whoami)"  ]]; then
                 myuser=$(whoami)
-                $(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff
+                $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff
             fi
         else
-            su $myuser -c "$(which screen) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff"
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname poweroff"
         fi
     done
 
     if [ "$mycount" = "0" ];
     then
-        echo -e "No VMS found with the name: $1"
+        echo -e "${RED}No VMS found with the name: $1${NC}"
    fi
 
 }
 
 
 
-#oxivbox-addonsisoupdate
-function oxivbox-addonsisoupdate {
+#ox-vbox-addonsisoupdate
+export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-addonsisoupdate"
+function ox-vbox-addonsisoupdate {
+	if [ "$1" == "--help" ]; then
+		echo "update the internal addons iso to current virtualbox version"
+		return 0
+	fi
 	BACKUPIFS=$IFS
 	IFS=$'\n'
-	echo -e "Searching for VM's"
-	for VM in $(oxivbox-get-vms);
+	echo -e "${cyan}Searching for VM's${NC}"
+	for VM in $(ox-vbox-get-vms);
 	do
 		myuser=$(echo $VM | awk '{print $1}')
 		myvm=$(echo $VM | awk '{print $2}')
@@ -144,39 +168,39 @@ function oxivbox-addonsisoupdate {
 		mytest=$(su -l $myuser -c "VBoxManage showvminfo $myvm --machinereadable" | grep dvd | grep /usr/share/virtualbox/VBoxGuestAdditions.iso)
 		if [ -n "$mytest" ];
 		then
-			echo -e "Guest Additions mounted! Unmounting..."
+			echo -e "${cyan}Guest Additions mounted! Unmounting...${NC}"
 			output=$(su -l $myuser -c "VBoxManage controlvm $myvm dvdattach none")
 		else
-			echo -e "Guest Additions not mounted"
+			echo -e "${cyan}Guest Additions not mounted${NC}"
 		fi
 	done
 	IFS=$BACKUPIFS
 
 	for USER in $(find /home -name .VirtualBox | awk -F/ '{print $3}');
 	do
-		echo -e "Closing medium for user: $USER"
+		echo -e "${cyan}Closing medium for user: ${CYAN}$USER${NC}"
 		output=$(su -l $USER -c "VBoxManage closemedium dvd /usr/share/virtualbox/VBoxGuestAdditions.iso")
 	done
 
 	mv /usr/share/virtualbox/VBoxGuestAdditions.iso /usr/share/virtualbox/VBoxGuestAdditions.iso.old
 	VBOXVER=$(VBoxManage | head -n 1 | grep -Eo '[0-9].*')
-	echo -e "Fetching actual ISO..."
+	echo -e "${CYAN}Fetching actual ISO...${NC}"
 	wget --progress=dot:mega -O /usr/share/virtualbox/VBoxGuestAdditions.iso http://download.virtualbox.org/virtualbox/$VBOXVER/VBoxGuestAdditions_$VBOXVER.iso
 
     for USER in $(find /home -name .VirtualBox | awk -F/ '{print $3}');
     do
-        echo -e "Opening medium for user: $USER"
+        echo -e "${cyan}Opening medium for user: ${CYAN}$USER${NC}"
         output=$(su -l $USER -c "VBoxManage openmedium dvd /usr/share/virtualbox/VBoxGuestAdditions.iso")
     done
 	
    	BACKUPIFS=$IFS
 	IFS=$'\n'
- 	echo -e "Searching for VM's"
-    for VM in $(oxivbox-get-vms);
+ 	echo -e "${cyan}Searching for VM's${NC}"
+    for VM in $(ox-vbox-get-vms);
     do
         myuser=$(echo $VM | awk '{print $1}')
         myvm=$(echo $VM | awk '{print $2}')
-		echo -e "\tMounting Guest Additions on ($myuser) $myvm"
+		echo -e "  ${cyan}Mounting Guest Additions on $myvm ${cyan}($myuser){NC}"
 		output=$(su -l $myuser -c "VBoxManage controlvm $myvm dvdattach /usr/share/virtualbox/VBoxGuestAdditions.iso")
     done
 	IFS=$BACKUPIFS
