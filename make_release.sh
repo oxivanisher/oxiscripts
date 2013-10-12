@@ -43,7 +43,3 @@ echo -e "Making file executable: \c"
 	chmod +x install.sh
 echo -e "Done"
 
-echo -e "Copying file to webserver: \c"
-	cp install.*  /home/oxi/oxi.ch_data/
-	chmod 644  /home/oxi/oxi.ch_data/install.*
-echo -e "Done"
