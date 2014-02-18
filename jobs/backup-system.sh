@@ -51,3 +51,9 @@ if [ "$mountme" == "1" ]; then umount /boot; fi
 
 # Backup the entire /etc .. like magic ;)
 backup /etc system
+
+# Backup cron tabs if existent
+if [ -d /var/spool/cron/ ];
+then
+	backup /var/spool/cron cron
+fi

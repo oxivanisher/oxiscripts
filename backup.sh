@@ -59,10 +59,10 @@ function rdiffbackup {
 
 function backup {
     mountbackup
-    FILENAME="/$BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m)/$(basename $1).$TIMESTAMP.tar.gz2"
+    FILENAME="/$BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m)/$(basename $1).$TIMESTAMP.tar.bz2"
     
     MKDIRO=$(mkdir -p $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) 2>&1)
-    TARO=$(/bin/tar -czf $FILENAME $1 2>/dev/null)
+    TARO=$(/bin/tar -cjf $FILENAME $1 2>/dev/null)
     
     SIZEF=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$2)
     SIZEH=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/)
