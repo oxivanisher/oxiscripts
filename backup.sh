@@ -170,6 +170,7 @@ function backupcleanup {
 		done
 
 		if [[ $1 =~ ^-?[0-9]+$ ]]; then
+			echo find "$BACKUPDIR/oxibackup/$(hostname)" -type f -mtime +$1 exec rm {} \;
 			find "$BACKUPDIR/oxibackup/$(hostname)" -type f -mtime +$1 exec rm {} \;
 
 			find "$BACKUPDIR/oxibackup/$(hostname)" -type d | while read LINE;
