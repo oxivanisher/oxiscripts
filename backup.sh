@@ -183,11 +183,11 @@ function backupcleanup {
 
 		SIZEAFTER=$(du -sh $BACKUPDIR/oxibackup/$(hostname))
 
-		if [ $COUNT -gt 0 ]; then
+		if [ $DEBUG -gt 0 ]; then
 			notifyadmin "$(hostname) backup cleanup" "-- $(hostname) backup cleanup --\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
 		fi
 	else
-	nofityadmin "backup cleanup FAIL" "please install fdupes!"
+		nofityadmin "backup cleanup FAIL" "please install fdupes!"
 	fi
 	
 	umountbackup

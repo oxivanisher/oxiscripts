@@ -6,7 +6,7 @@ if [ -d /root/scripts ]; then
 	backup /root/scripts root-scripts
 fi
 
-if [ -d /home/*/scripts ]; then
+if ls /home/*/scripts &> /dev/null; then
 	backup /home/*/scripts user-scripts
 fi
 
@@ -15,6 +15,6 @@ if [ -d /root/bin ]; then
 	backup /root/bin root-bin
 fi
 
-if [ -d /home/*/bin ]; then
+if ls /home/*/bin &> /dev/null; then
 	backup /home/*/bin user-bin
 fi
