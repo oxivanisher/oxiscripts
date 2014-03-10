@@ -233,7 +233,6 @@ done
 
 # add init.sh to all .bashrc files
 # (Currently doesn't support changing of the install dir!)
-echo -e "\n${cyan}Checking user profiles to add init.sh${NC}"
 function addtorc {
 	if [ ! -n "$(grep oxiscripts/init.sh $1)" ];
 	then
@@ -247,22 +246,34 @@ function addtorc {
 		echo -e "  ${cyan}Found but not editing file: ${CYAN}$1${NC}"
 	fi
 }
-
-if [ ! -f /root/.bash_profile ];
+# additionally, let it load this way too
+if [ -d "/etc/profile.d/" ];
 then
-	echo -e "#!/bin/bash\n[[ -f ~/.bashrc ]] && . ~/.bashrc" >> /root/.bash_profile
+	if [ ! -L "/etc/profile.d/oxiscripts.sh" ];
+	then
+		echo -e "\n${cyan}Linking /etc/profile.d/oxiscripts.sh${NC}"
+		ln -s $TARGETDIR/init.sh /etc/profile.d/oxiscripts.sh
+	else
+		echo -e "\n${cyan}/etc/profile.d/oxiscripts.sh already exists${NC}"
+	fi
+else
+	echo -e "\n${cyan}Checking user profiles to add init.sh${NC}"
+	
+	if [ ! -f /root/.bash_profile ];
+	then
+		echo -e "#!/bin/bash\n[[ -f ~/.bashrc ]] && . ~/.bashrc" >> /root/.bash_profile
+	fi
+	touch /root/.bashrc
+	addtorc /root/.bashrc
+	for FILE in $(ls /home/*/.bash_history); do
+		tname="$( dirname $FILE )/.bashrc"
+		username=$( dirname $FILE | sed 's/home//g' | sed 's/\.bash_history//g' | sed 's/\///g' )
+		touch $tname
+		addtorc $tname
+		chown $username.$username $tname
+		chmod 644 $tname
+	done
 fi
-touch /root/.bashrc
-addtorc /root/.bashrc
-for FILE in $(ls /home/*/.bash_history); do
-	tname="$( dirname $FILE )/.bashrc"
-	username=$( dirname $FILE | sed 's/home//g' | sed 's/\.bash_history//g' | sed 's/\///g' )
-	touch $tname
-	addtorc $tname
-	chown $username.$username $tname
-	chmod 644 $tname
-done
-
 
 install=""
 doit="0"

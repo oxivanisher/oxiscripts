@@ -12,7 +12,7 @@
 # past this point for scp and rcp, and it's important to refrain from
 # outputting anything in those cases.
 [ -z "$PS1" ] && return
-
+[ -z "$BASH_VERSION" -o -z "$PS1" ] && return
 
 . /etc/oxiscripts/setup.sh
 
@@ -91,7 +91,7 @@ function oxiscripts-update {
 	echo -e "${BLUE}--- oXiScripts autoupdate ---${NC}\n"
 	if [[ ${EUID} != 0 ]] ; then
 		echo -e "This function must be run as root. Sorry!"
-		exit 1
+		return
 	fi
 
 	echo -e "Downloading files: \c"
@@ -130,48 +130,48 @@ function oxiscripts-set {
 
 	if [[ ${EUID} != 0 ]] ; then
 		echo -e "This function must be run as root. Sorry!"
-	else
-		case "$1" in
-			debug)
-				echo -e "Toggling DEBUG to: \c"
-				if [ $DEBUG -eq 0 ]; then
-					echo -e "${RED}Enabled${NC}"
-					sed 's/DEBUG=0/DEBUG=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-					mv /tmp/setup.sh /etc/oxiscripts/setup.sh
-				else
-					echo -e "${BLUE}Disabled${NC}"
-					sed 's/DEBUG=1/DEBUG=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-					mv /tmp/setup.sh /etc/oxiscripts/setup.sh
-				fi
-			;;
-
-			mirror)
-				if [ -n "$2" ]; then
-					echo -e "Setting MIRROR to: ${RED}$2${NC}"
-					sed "s|OXIMIRROR=$(echo $OXIMIRROR)|OXIMIRROR=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
-					mv /tmp/setup.sh /etc/oxiscripts/setup.sh
-				else
-					echo -e "Please add a URL"
-				fi
-			;;
-
-			mail)
-				if [ -n "$2" ]; then
-                    echo -e "Setting MAIL to: ${RED}$2${NC}"
-                    sed "s|ADMINMAIL=$(echo $ADMINMAIL)|ADMINMAIL=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
-                    mv /tmp/setup.sh /etc/oxiscripts/setup.sh
-                else
-            	    echo -e "Please add a Email Adress"
-        	    fi
-			;;
-
-			*)
-				echo -e "No corresponding keyword found: $1"
-				echo -e "\tPossible are: debug, mirror and mail"
-			;;
-
-		esac
+		return
 	fi
+	case "$1" in
+		debug)
+			echo -e "Toggling DEBUG to: \c"
+			if [ $DEBUG -eq 0 ]; then
+				echo -e "${RED}Enabled${NC}"
+				sed 's/DEBUG=0/DEBUG=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+				mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+			else
+				echo -e "${BLUE}Disabled${NC}"
+				sed 's/DEBUG=1/DEBUG=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+				mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+			fi
+		;;
+
+		mirror)
+			if [ -n "$2" ]; then
+				echo -e "Setting MIRROR to: ${RED}$2${NC}"
+				sed "s|OXIMIRROR=$(echo $OXIMIRROR)|OXIMIRROR=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
+				mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+			else
+				echo -e "Please add a URL"
+			fi
+		;;
+
+		mail)
+			if [ -n "$2" ]; then
+				echo -e "Setting MAIL to: ${RED}$2${NC}"
+				sed "s|ADMINMAIL=$(echo $ADMINMAIL)|ADMINMAIL=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
+				mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+			else
+                echo -e "Please add a Email Adress"
+			fi
+		;;
+
+		*)
+			echo -e "No corresponding keyword found: $1"
+			echo -e "\tPossible are: debug, mirror and mail"
+		;;
+
+	esac
 }
 
 function oxiscripts-get {
