@@ -176,7 +176,7 @@ function backupcleanup {
 			do
 			        if [ $(find "$LINE" -type f | wc -l) == 0 ];
 			        then
-			                rmdir "$LINE"
+			                rmdir "$LINE" > /dev/null 2>&1  
 			        fi
 			done
 		fi
