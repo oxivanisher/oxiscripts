@@ -18,3 +18,19 @@ fi
 if ls /home/*/bin &> /dev/null; then
 	backup /home/*/bin user-bin
 fi
+
+#This job backups the .bash* file of each user
+if ls /root/.bash* &> /dev/null; then
+	for FILE in /root/.bash*;
+	do
+		backup $FILE root-bash
+	done
+fi
+
+for DIR in /home/*;
+do
+	for FILE in $DIR/.bash*;
+	do
+		backup $FILE user-$(basename $DIR)-bash
+	done
+done
