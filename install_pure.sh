@@ -278,7 +278,7 @@ done
 install=""
 doit="0"
 echo -e "\n${cyan}Checking and installing optional apps\n  \c"
-BINS="rdiff-backup fdupes rsync mailx screen"
+BINS="rdiff-backup fdupes rsync bsd-mailx screen"
 for BIN in $BINS
 do
 	if [ ! -n "$(which $BIN 2>/dev/null )" ]; then
