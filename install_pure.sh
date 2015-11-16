@@ -40,7 +40,7 @@ else
 	echo -e "${CYAN}Done${NC}"
 
 	case "$(lsb_release -is)" in
-		Debian|Ubuntu)
+		Debian|Ubuntu|Raspbian)
 			LSBID="debian"
 		;;
 		Gentoo)
