@@ -1,6 +1,17 @@
 #!/bin/bash
 . /etc/oxiscripts/backup.sh
 
+case "$(lsb_release -is)" in
+	Debian|Ubuntu|Raspbian)
+		LSBID="debian"
+	;;
+	Gentoo)
+		LSBID="gentoo"
+	;;
+#		RedHatEnterpriseServer|CentOS)
+#			LSBID="redhat"
+#		;;
+esac
 
 #If we are on a debian based system, backup the installed packages
 if [ "$LSBID" == "debian" ];
@@ -16,14 +27,8 @@ elif [ "$LSBID" == "gentoo" ];
 then
 	# Gentoo systems backup
 
-	# backup fstab
-	backup /etc/fstab system
-
 	# backup world file
 	backup /var/lib/portage/world system
-
-	# backup make.conf
-	backup /etc/make.conf system
 
 	# backup kernel config
 	zcat /proc/config.gz > /tmp/kernel-config-$(uname -r)
