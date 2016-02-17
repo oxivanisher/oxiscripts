@@ -1,9 +1,12 @@
 #!/bin/bash
 #$( echo $0 | sed s/$(basename $0)//g )
-. /etc/oxiscripts/setup.sh
+source /etc/oxiscripts/setup.sh
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
 function rdiffbackup {
+	LOGFILE="${LOGDIR}/rdiffbackup.log"
+	echo "Rdiffbackup starting at $(date) for $1 to $2 with parameters: $3" >> ${LOGFILE}
+
 	mountbackup
 	FOLDERNAME="/$BACKUPDIR/oxirdiffbackup/$(hostname)/$2/"
 
@@ -17,8 +20,8 @@ function rdiffbackup {
 	done
 
 
-	RDIFF1O=$($(which rdiff-backup) $PARAMETER $1 $FOLDERNAME 2>/dev/null)
-	RDIFF2O=$($(which rdiff-backup) --force --remove-older-than $3 $1 2>/dev/null)
+	RDIFF1O=$($(which rdiff-backup) $PARAMETER $1 $FOLDERNAME &>>${LOGFILE})
+	RDIFF2O=$($(which rdiff-backup) --force --remove-older-than $3 $FOLDERNAME &>>${LOGFILE})
 
 	SIZEF=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$2)
 	SIZEH=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/)
@@ -51,18 +54,24 @@ function rdiffbackup {
 
 	SIZE="size total:\t$SIZET\nsize host:\t$SIZEH\nsize fabric:\t$SIZEF"
 
+	MESSAGE="-- FILES IN $FOLDERNAME --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$RDIFF1O\n$RDIFF2O\n$MOUNTO$UMOUNTO$MKDIRO\n$CHOWNO"
+
+	echo -e "Rdiffbackup finished.\n" >> ${LOGFILE}
 	if [ $DEBUG -gt 0 ]; then
-		notifyadmin "$(hostname) $2 rdiff-backup" "-- FILES IN $FOLDERNAME --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$RDIFF1O\n$RDIFF2O\n$MOUNTO$UMOUNTO$MKDIRO\n$CHOWNO"
+		notifyadmin "$(hostname) $2 rdiff-backup" "${MESSAGE}"
 	fi
 }
 
 
 function backup {
+	LOGFILE="${LOGDIR}/backup.log"
+	echo "Backup starting at $(date) for $1 to $2 with options: $3" >> ${LOGFILE}
+	
 	mountbackup
 	FILENAME="/$BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m)/$(basename $1).$TIMESTAMP.tar.bz2"
 	
 	MKDIRO=$(mkdir -p $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) 2>&1)
-	TARO=$(/bin/tar -cjf $FILENAME $1 2>/dev/null)
+	TARO=$(/bin/tar -cjf $FILENAME $1 &>>${LOGFILE})
 	
 	SIZEF=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$2)
 	SIZEH=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/)
@@ -94,20 +103,27 @@ function backup {
 	fi
 	
 	SIZE="size total:\t$SIZET\nsize host:\t$SIZEH\nsize fabric:\t$SIZEF"
+
+	MESSAGE="-- FILES IN $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$TARO$MOUNTO$UMOUNTO$MKDIRO"
 	
+	echo -e "${MESSAGE}\nBackup finished.\n" >> ${LOGFILE}
 	if [ $DEBUG -gt 0 ]; then    
-	notifyadmin "$(hostname) $2 backup" "-- FILES IN $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$TARO$MOUNTO$UMOUNTO$MKDIRO" 
+		notifyadmin "$(hostname) $2 backup" "${MESSAGE}" 
 	fi
 }
 
 function rsyncbackup {
+	LOGFILE="${LOGDIR}/rsyncbackup.log"
 	while $(test -f /var/run/oxiscripts-rsyncbackup.pid); do sleep 10; done
-	echo $$ > /var/run/oxiscripts-rsyncbackup.pid
+	echo $$ > /var/lock/oxiscripts-rsyncbackup.pid
+	trap "rm -f /var/lock/oxiscripts-rsyncbackup.pid" SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM	
+	echo "Rsyncbackup starting at $(date) for $1 to $2 with options: $3 ${PARAMETER}" >> ${LOGFILE}
 
 	PARAMETER=""
 	for DIR in ${EXCLUDED_DIR}; do
 		PARAMETER="$PARAMETER--exclude $DIR "
 	done
+
 
 	if [ -z "$RSYNCPASSWORD" ]; then
 		RSYNCO=$($(which rsync) -avh $3 ${PARAMETER} $1 $2)
@@ -115,14 +131,14 @@ function rsyncbackup {
 		echo "$RSYNCPASSWORD" > /etc/oxiscripts/rsyncpw-$$.tmp
 		chmod 600 /etc/oxiscripts/rsyncpw-$$.tmp
 		#RSYNCO=
-		RSYNCO=$($(which rsync) -avh $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp ${PARAMETER} $1 $2)
+		RSYNCO=$($(which rsync) -avh $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp --log-file=${LOGFILE} ${PARAMETER} $1 $2)
 		rm /etc/oxiscripts/rsyncpw-$$.tmp
 	fi
 
+	echo -e "Rsyncbackup finished.\n" >> ${LOGFILE}
 	if [ $DEBUG -gt 0 ]; then
 		notifyadmin "$(hostname) $2 rsync-backup" "-- DEBUG INFOS --\n$RSYNCO"
 	fi
-	rm /var/run/oxiscripts-rsyncbackup.pid
 }
 
 

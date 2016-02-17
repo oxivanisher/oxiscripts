@@ -28,6 +28,8 @@ export OXIMIRROR=http://oxi.ch/install.sh
 # do not change the release number
 export OXIRELEASE=xxx
 
+# internal vars
+LOGDIR="/var/log/oxiscripts/"
 
 function mountbackup {
     while $(test -f /var/run/oxiscripts-backup.pid); do sleep 10; done

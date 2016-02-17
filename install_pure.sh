@@ -74,17 +74,25 @@ if [ -z "$( which uudecode 2>/dev/null )" ]; then
 fi
 
 echo -e "${cyan}Creating ${CYAN}$TARGETDIR${cyan}: ${NC}\c"
+	# internal dirs
 	mkdir -p $TARGETDIR/install
 	mkdir -p $TARGETDIR/jobs
 	mkdir -p $TARGETDIR/debian
 	mkdir -p $TARGETDIR/gentoo
 	mkdir -p $TARGETDIR/user
+
+	# system dirs
+	mkdir -p /var/log/oxiscripts/
 echo -e "${CYAN}Done${NC}"
 
 echo -e "${cyan}Extracting files: \c"
 	match=$(grep --text --line-number '^PAYLOAD:$' $0 | cut -d ':' -f 1)
 	payload_start=$((match+1))
 	tail -n +$payload_start $0 | uudecode | tar -C $TARGETDIR/install -xz || exit 0
+echo -e "${CYAN}Done${NC}"
+
+echo -e "${cyan}Linking files\c"
+	ln -sf $TARGETDIR/logrotate /etc/logrotate.d/oxiscripts
 echo -e "${CYAN}Done${NC}"
 
 echo -e "${cyan}Putting files in place${NC}\c"
