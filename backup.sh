@@ -20,8 +20,8 @@ function rdiffbackup {
 	done
 
 
-	RDIFF1O=$($(which rdiff-backup) $PARAMETER $1 $FOLDERNAME &>>${LOGFILE})
-	RDIFF2O=$($(which rdiff-backup) --force --remove-older-than $3 $FOLDERNAME &>>${LOGFILE})
+	$(which rdiff-backup) $PARAMETER $1 $FOLDERNAME &>>${LOGFILE}
+	$(which rdiff-backup) --force --remove-older-than $3 $FOLDERNAME &>>${LOGFILE}
 
 	SIZEF=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$2)
 	SIZEH=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/)
@@ -42,10 +42,6 @@ function rdiffbackup {
 
 	if [ -n "$UMOUNTO" ]; then
 		UMOUNTO="mount:\t$UMOUNTO\n"
-	fi
-
-	if [ -n "$RDIFF1O" ]; then
-		TARO="rdiff-backup:\t$RDIFF1O\n"
 	fi
 
 	if [ -n "$MKDIRO" ]; then
@@ -114,9 +110,9 @@ function backup {
 
 function rsyncbackup {
 	LOGFILE="${LOGDIR}/rsyncbackup.log"
-	while $(test -f /var/run/oxiscripts-rsyncbackup.pid); do sleep 10; done
-	echo $$ > /var/lock/oxiscripts-rsyncbackup.pid
-	trap "rm -f /var/lock/oxiscripts-rsyncbackup.pid" SIGHUP SIGINT SIGQUIT SIGABRT SIGKILL SIGALRM SIGTERM	
+	LOCKFILE="/var/run/oxiscripts-rsyncbackup.pid"
+	while $(test -f "${LOCKFILE}"); do sleep 10; done
+	echo $$ > "${LOCKFILE}"
 	echo "Rsyncbackup starting at $(date) for $1 to $2 with options: $3 ${PARAMETER}" >> ${LOGFILE}
 
 	PARAMETER=""
@@ -125,8 +121,9 @@ function rsyncbackup {
 	done
 
 
+	trap "rm -f ${LOCKFILE}" SIGHUP SIGINT SIGTERM
 	if [ -z "$RSYNCPASSWORD" ]; then
-		RSYNCO=$($(which rsync) -avh $3 ${PARAMETER} $1 $2)
+		RSYNCO=$($(which rsync) -avh $3 --log-file=${LOGFILE} ${PARAMETER} $1 $2)
 	else
 		echo "$RSYNCPASSWORD" > /etc/oxiscripts/rsyncpw-$$.tmp
 		chmod 600 /etc/oxiscripts/rsyncpw-$$.tmp
@@ -139,6 +136,7 @@ function rsyncbackup {
 	if [ $DEBUG -gt 0 ]; then
 		notifyadmin "$(hostname) $2 rsync-backup" "-- DEBUG INFOS --\n$RSYNCO"
 	fi
+	rm -f "${LOCKFILE}"
 }
 
 
