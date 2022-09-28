@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#Please do not add a / at the end of the following line!
+# Please do not add a / at the end of the following line!
 TARGETDIR=/etc/oxiscripts
 
 
@@ -122,20 +122,20 @@ else
 	mv $TARGETDIR/install/setup.sh $TARGETDIR/setup.sh
 fi
 
-#if [ -e $TARGETDIR/backup.sh ]; then
-#	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh.new
+# if [ -e $TARGETDIR/backup.sh ]; then
+# 	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh.new
 
-#	movevar "backup.sh" '^\s*MOUNTO=.*$'
-#	movevar "backup.sh" '^\s*UMOUNTO=.*$'
+# 	movevar "backup.sh" '^\s*MOUNTO=.*$'
+# 	movevar "backup.sh" '^\s*UMOUNTO=.*$'
 
-#	mv $TARGETDIR/backup.sh.new $TARGETDIR/backup.sh
-#else
-#	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
-#fi
+# 	mv $TARGETDIR/backup.sh.new $TARGETDIR/backup.sh
+# else
+# 	mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
+# fi
 
 mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
 
-#mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
+# mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
 mv $TARGETDIR/install/init.sh $TARGETDIR/init.sh
 mv $TARGETDIR/install/virtualbox.sh $TARGETDIR/virtualbox.sh
 
@@ -183,54 +183,71 @@ echo -e "\n${cyan}Setting permissions: \c"
 
 echo -e "${CYAN}Done${NC}\n"
 
-echo -e "${cyan}Enabling services${NC}"
+echo -e "${cyan}Configuring services${NC}"
 if [ "$LSBID" == "debian" ];
 then
-	if [ ! -e /etc/init.d/oxivbox ];
-	then
-		echo -e "  ${cyan}Activating debian vbox job${NC}"
-		ln -s $TARGETDIR/debian/oxivbox.sh /etc/init.d/oxivbox
+	# some of those things are now no longer required and will be cleaned up
+
+	# if [ ! -e /etc/init.d/oxivbox ];
+	# then
+	# 	echo -e "  ${cyan}Activating debian vbox job${NC}"
+	# 	ln -s $TARGETDIR/debian/oxivbox.sh /etc/init.d/oxivbox
+	# fi
+	if [ -L /etc/init.d/oxivbox ]; then
+		unlink /etc/init.d/oxivbox
 	fi
 
-	echo -e "  ${cyan}Activating weekly update check: \c"
-	ln -sf $TARGETDIR/debian/updatecheck.sh /etc/cron.weekly/updatecheck
-	echo -e "${CYAN}Done${NC}"
-
-	if [ -e /var/cache/apt/archives/ ]; then
-		echo -e "  ${cyan}Activating weekly cleanup of /var/cache/apt/archives/: \c"
-		ln -sf $TARGETDIR/debian/cleanup-apt.sh /etc/cron.weekly/cleanup-apt
-		echo -e "${CYAN}Done${NC}"
+	# echo -e "  ${cyan}Activating weekly update check: \c"
+	# ln -sf $TARGETDIR/debian/updatecheck.sh /etc/cron.weekly/updatecheck
+	# echo -e "${CYAN}Done${NC}"
+	if [ -L /etc/cron.weekly/updatecheck ]; then
+		unlink /etc/cron.weekly/updatecheck
 	fi
+
+	# if [ -e /var/cache/apt/archives/ ]; then
+	# 	echo -e "  ${cyan}Activating weekly cleanup of /var/cache/apt/archives/: \c"
+	# 	ln -sf $TARGETDIR/debian/cleanup-apt.sh /etc/cron.weekly/cleanup-apt
+	# 	echo -e "${CYAN}Done${NC}"
+	# fi
+	if [ -L /etc/cron.weekly/cleanup-apt ]; then
+		unlink /etc/cron.weekly/cleanup-apt
+	fi
+
 fi
-##monthly cron$
+## monthly cron
 echo -e "  ${cyan}Activating monthly backup statistic: \c"
-    ln -sf $TARGETDIR/jobs/backup-info.sh /etc/cron.monthly/backup-info
+	ln -sf $TARGETDIR/jobs/backup-info.sh /etc/cron.monthly/backup-info
 echo -e "${CYAN}Done${NC}"
 
-##weelky cron
-echo -e "  ${cyan}Activating weekly backup cleanup (saves a lot of space!): \c"
-    ln -sf $TARGETDIR/jobs/backup-cleanup.sh /etc/cron.weekly/backup-cleanup
-echo -e "${CYAN}Done${NC}"
+## weelky cron
+if [ -L /etc/cron.weekly/backup-cleanup ]; then
+	echo -e "  ${cyan}Removing old weekly backup cleanup (this is now done daily): \c"
+		unlink /etc/cron.weekly/backup-cleanup
+	echo -e "${CYAN}Done${NC}"
+fi
 
-#daily cron
+# daily cron
 echo -e "  ${cyan}Activating daily system, ~/scripts and ~/bin backup: \c"
-    ln -sf $TARGETDIR/jobs/backup-system.sh /etc/cron.daily/backup-system
-    ln -sf $TARGETDIR/jobs/backup-scripts.sh /etc/cron.daily/backup-scripts
+	ln -sf $TARGETDIR/jobs/backup-system.sh /etc/cron.daily/backup-system
+	ln -sf $TARGETDIR/jobs/backup-scripts.sh /etc/cron.daily/backup-scripts
 echo -e "${CYAN}Done${NC}"
 
+echo -e "  ${cyan}Activating daily backup cleanup (saves a lot of space!): \c"
+	ln -sf $TARGETDIR/jobs/backup-cleanup.sh /etc/cron.daily/backup-Z98-cleanup
+echo -e "${CYAN}Done${NC}"
 
 if [ $(which ejabberdctl 2>/dev/null ) ]; then
-    echo -e "  ${CYAN}Found ejabberd, installing daily backup and weekly avatar cleanup${NC}"
-    ln -sf $TARGETDIR/jobs/cleanup-avatars.sh /etc/cron.weekly/cleanup-avatars
-    ln -sf $TARGETDIR/jobs/backup-ejabberd.sh /etc/cron.daily/backup-ejabberd
+	echo -e "  ${CYAN}Found ejabberd, installing daily backup and weekly avatar cleanup${NC}"
+	ln -sf $TARGETDIR/jobs/cleanup-avatars.sh /etc/cron.weekly/cleanup-avatars
+	ln -sf $TARGETDIR/jobs/backup-ejabberd.sh /etc/cron.daily/backup-ejabberd
 fi
 
 if [ $(which masqld 2>/dev/null ) ]; then
-    echo -e "  ${CYAN}Found mysql, installing daily backup${NC}"
-    ln -sf $TARGETDIR/jobs/backup-mysql.sh /etc/cron.daily/backup-mysql
+	echo -e "  ${CYAN}Found mysql, installing daily backup${NC}"
+	ln -sf $TARGETDIR/jobs/backup-mysql.sh /etc/cron.daily/backup-mysql
 fi
 
-echo -e "\n${cyan}Activated services${NC}"
+echo -e "\n${cyan}Now activated services${NC}"
 for FILE in $( ls -l /etc/cron.*/* | grep /etc/oxiscripts/jobs/ | awk '{print $9}' | sort )
 do
 	shedule="$( echo $FILE | sed 's/\/etc\/cron\.//g' | sed 's/\// /g' | awk '{print $1}' )"
