@@ -42,7 +42,7 @@ shopt -s histappend
 # the history will halt the shell prompt until it's finished.
 #PROMPT_COMMAND='history -a'
 
-# Change the window title of X terminals 
+# Change the window title of X terminals
 case ${TERM} in
 	[aEkx]term*|rxvt*|gnome*|konsole*|interix)
 		PS1='\[\033]0;\u@\h:\w\007\]'
@@ -147,7 +147,7 @@ function oxiscripts-update {
 		chmod +x /tmp/$(basename $OXIMIRROR)
 		export $(egrep '^INSTALLOXIRELEASE=.*$' /tmp/$(basename $OXIMIRROR))
 		echo -e "Actual Release:\t$OXIRELEASE | New Release:\t$INSTALLOXIRELEASE"
-	
+
 		if [ "$OXIRELEASE" -lt "$INSTALLOXIRELEASE" ]; then
 			echo -e "${BLUE}--- Updating oXiScripts ---${NC}"
 			/tmp/install.sh
@@ -321,11 +321,6 @@ then
         alias oxi_scanlan='$SCRIPTDIR/scanlan.sh'
 fi
 
-if [ -f $SCRIPTDIR/schwanzvergleich.sh ];
-then
-        alias oxi_schwanzvergleich='$SCRIPTDIR/schwanzvergleich.sh'
-fi
-
 if [ -f $SCRIPTDIR/shortbackup.sh ];
 then
         alias oxi_shortbackup='$SCRIPTDIR/shortbackup.sh'
@@ -345,7 +340,7 @@ fi
 export HISTSIZE=10000
 
 #How to init me (put it in your ~/.bashrc)
-# 
+#
 #if [ -f $HOME/scripts/init.sh ]; then
 #       . $HOME/scripts/init.sh
-#fi 
+#fi
