@@ -3,7 +3,7 @@
 
 # Load gentoo like PS1
 
-# Change the window title of X terminals 
+# Change the window title of X terminals
 case ${TERM} in
         xterm*|rxvt*|Eterm|aterm|kterm|gnome*)
                 PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/$HOME/~}\007"'
@@ -40,7 +40,7 @@ if ${use_color} ; then
                 PS1='\[\033[01;31m\]\h\[\033[01;34m\] \W \$\[\033[00m\] '
         else
                 PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \$\[\033[00m\] '
- #                PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \[\`if [[ \$? = "0" ]]; then echo '\e[32m=\)\e[0m'; else echo '\e[31m=\(\e[0m' ; fi\`\] \$\[\033[00m\] '
+                # PS1='\[\033[01;32m\]\u@\h\[\033[01;34m\] \w \[\`if [[ \$? = "0" ]]; then echo '\e[32m=\)\e[0m'; else echo '\e[31m=\(\e[0m' ; fi\`\] \$\[\033[00m\] '
         fi
 
         alias ls='ls --color=auto'
