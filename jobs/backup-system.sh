@@ -54,8 +54,8 @@ if [ "$mountme" == "1" ]; then mount /boot; fi
 BACKUP_OPTIONS="--exclude=/boot/grub/grubenv" backup /boot system
 if [ "$mountme" == "1" ]; then umount /boot; fi
 
-# Backup the entire /etc .. like magic ;)
-backup /etc system
+# Backup the entire /etc (except my docker compose hack dir) .. like magic ;)
+BACKUP_OPTIONS="--exclude=/etc/docker/compose" backup /etc system
 
 # Backup cron tabs if existent
 if [ -d /var/spool/cron/ ];
