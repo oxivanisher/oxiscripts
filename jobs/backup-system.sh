@@ -51,7 +51,7 @@ fi
 
 # backup /boot
 if [ "$mountme" == "1" ]; then mount /boot; fi
-backup /boot system
+BACKUP_OPTIONS="--exclude=/boot/grubgrubenv" backup /boot system
 if [ "$mountme" == "1" ]; then umount /boot; fi
 
 # Backup the entire /etc .. like magic ;)

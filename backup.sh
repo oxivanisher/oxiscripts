@@ -62,22 +62,22 @@ function rdiffbackup {
 function backup {
 	LOGFILE="${LOGDIR}/backup.log"
 	echo "Backup starting at $(date) for $1 to $2 with options: $3" >> ${LOGFILE}
-	
+
 	mountbackup
 	FILENAME="/$BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m)/$(basename $1).$TIMESTAMP.tar.bz2"
-	
+
 	MKDIRO=$(mkdir -p $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) 2>&1)
-	TARO=$(/bin/tar -cjf $FILENAME $1 &>>${LOGFILE})
-	
+	TARO=$(/bin/tar ${BACKUP_OPTIONS} -cjf $FILENAME $1 &>>${LOGFILE})
+
 	SIZEF=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$2)
 	SIZEH=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/)
 	SIZET=$(du -sh $BACKUPDIR/oxibackup/)
-	
+
 	NEWLISTING=$(ls -lha $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m))
 	MOUNT=$(mount | grep $BACKUPDIR 2>&1)
-	
+
 	umountbackup
-	
+
 	if [ -n "$MOUNT" ]; then
 	MOUNT="mount:\t$MOUNT\n"
 	fi
@@ -85,7 +85,7 @@ function backup {
 	if [ -n "$MOUNTO" ]; then
 	MOUNTO="mount:\t$MOUNTO\n"
 	fi
-	
+
 	if [ -n "$UMOUNTO" ]; then
 	UMOUNTO="mount:\t$UMOUNTO\n"
 	fi
@@ -93,18 +93,18 @@ function backup {
 	if [ -n "$TARO" ]; then
 	TARO="tar:\t$TARO\n"
 	fi
-	
+
 	if [ -n "$MKDIRO" ]; then
 	MKDIRO="mount:\t$MKDIRO\n"
 	fi
-	
+
 	SIZE="size total:\t$SIZET\nsize host:\t$SIZEH\nsize fabric:\t$SIZEF"
 
 	MESSAGE="-- FILES IN $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$TARO$MOUNTO$UMOUNTO$MKDIRO"
-	
+
 	echo -e "${MESSAGE}\nBackup finished.\n" >> ${LOGFILE}
-	if [ $DEBUG -gt 0 ]; then    
-		notifyadmin "$(hostname) $2 backup" "${MESSAGE}" 
+	if [ $DEBUG -gt 0 ]; then
+		notifyadmin "$(hostname) $2 backup" "${MESSAGE}"
 	fi
 }
 
@@ -142,7 +142,7 @@ function rsyncbackup {
 
 function backupinfo {
 	mountbackup
-	
+
 	SIZET="size total:\t$(du -sh $BACKUPDIR/oxibackup/)"
 	SIZEH="size host:\t$(du -sh $BACKUPDIR/oxibackup/$(hostname)/)"
 
@@ -174,7 +174,7 @@ function backupinfo {
 
 function backupcleanup {
 	mountbackup
-	
+
 	if [ -n $(which fdupes) ]; then
 		SIZEBEFORE=$(du -sh $BACKUPDIR/oxibackup/$(hostname))
 		COUNT=0
@@ -190,7 +190,7 @@ function backupcleanup {
 			do
 			        if [ $(find "$LINE" -type f | wc -l) == 0 ];
 			        then
-			                rmdir "$LINE" > /dev/null 2>&1  
+			                rmdir "$LINE" > /dev/null 2>&1
 			        fi
 			done
 		fi
@@ -203,7 +203,6 @@ function backupcleanup {
 	else
 		nofityadmin "backup cleanup FAIL" "please install fdupes!"
 	fi
-	
+
 	umountbackup
 }
-
