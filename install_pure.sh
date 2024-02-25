@@ -91,7 +91,7 @@ echo -e "${cyan}Extracting files: \c"
 	tail -n +$payload_start $0 | uudecode | tar -C $TARGETDIR/install -xz || exit 0
 echo -e "${CYAN}Done${NC}"
 
-echo -e "${cyan}Linking files\c"
+echo -e "${cyan}Linking files \c"
 	ln -sf $TARGETDIR/logrotate /etc/logrotate.d/oxiscripts
 echo -e "${CYAN}Done${NC}"
 
@@ -179,7 +179,7 @@ echo -e "\n${cyan}Setting permissions: \c"
 	chmod -R 755 $TARGETDIR/gentoo/
 	chmod -R 755 $TARGETDIR/user/
 
-	chown -R root.root $TARGETDIR
+	chown -R root:root $TARGETDIR
 
 echo -e "${CYAN}Done${NC}\n"
 
@@ -296,7 +296,7 @@ for FILE in $(ls /home/*/.bash_history); do
 	username=$( dirname $FILE | sed 's/home//g' | sed 's/\.bash_history//g' | sed 's/\///g' )
 	touch $tname
 	addtorc $tname
-	chown $username.$username $tname
+	chown $username:$username $tname
 	chmod 644 $tname
 done
 
