@@ -13,8 +13,13 @@
 # Test for an interactive shell.  There is no need to set anything
 # past this point for scp and rcp, and it's important to refrain from
 # outputting anything in those cases.
-if [[ -z $- || $- != *i* ]] ; then
-	# Shell is non-interactive or strange in another way (like lightdm session login). Be done now!
+if [[ -z $- ]] ; then
+	# Shell is strange (like lightdm session login). Be done now!
+	return
+fi
+
+if [[ $- != *i* ]] ; then
+	# Shell is non-interactive. Be done now!
 	return
 fi
 
