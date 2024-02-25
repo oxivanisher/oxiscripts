@@ -23,7 +23,7 @@ export OXICOLOR=1
 export DEBUG=0
 
 # the mirror for update
-export OXIMIRROR=http://oxi.ch/install.sh
+export OXIMIRROR=https://oxi.ch/files/install.sh
 
 # do not change the release number
 export OXIRELEASE=xxx
