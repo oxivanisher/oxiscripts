@@ -3,7 +3,7 @@
 
 # Load system functions
 export OXISCRIPTSFUNCTIONS="ox-help"
-function ox-help {
+ox-help () {
 	if [ "$1" == "--help" ]; then
 		echo "show this help"
 		return 0
@@ -40,7 +40,7 @@ function ox-help {
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-show"
-function ox-base-show {
+ox-base-show () {
 	if [ "$1" == "--help" ]; then
 		echo "show configuration variables"
 		return 0
@@ -56,7 +56,7 @@ function ox-base-show {
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-notifyadmin"
-function ox-base-notifyadmin {
+ox-base-notifyadmin () {
 	if [ "$1" == "--help" ]; then
 		echo "send email notification to admin ($ADMINMAIL)"
 		return 0
@@ -70,7 +70,7 @@ function ox-base-notifyadmin {
 	echo -e "$2" | $MAILCOMMAND -s "$1 ($SOURCE)" $ADMINMAIL
 }
 
-function ox-zint-log {
+ox-zint-log () {
 	mystring=${@}
 	if [ -n "$mystring" ];
 	then
@@ -78,7 +78,7 @@ function ox-zint-log {
 	fi
 }
 
-function ox-zint-notify {
+ox-zint-notify () {
 	mystring=${@}
 	length=$(( ${#mystring} + 3 ))
 	line=""
@@ -91,7 +91,7 @@ function ox-zint-notify {
 	echo -e "${BLUE}$line${NC}\n"
 }
 
-function ox-zint-alert {
+ox-zint-alert () {
 	ox-zint-log ${@}
 	mystring=${@}
 	length=$(( ${#mystring} + 3 ))
@@ -105,7 +105,7 @@ function ox-zint-alert {
 	echo -e "${BLUE}$line${NC}\n"
 }
 
-function ox-zint-run {
+ox-zint-run () {
 	runts=$(date +%s)
 	ox-zint-alert "Running: ${@}"
 	${@}
@@ -117,7 +117,7 @@ if [[ $EUID -eq 0 ]];
 then
 	#oxiscripts update function
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-update"
-	function ox-base-update {
+	ox-base-update () {
 		if [ "$1" == "--help" ]; then
 			echo "update from $OXIMIRROR"
 			return 0
@@ -141,7 +141,7 @@ then
 			chmod +x /tmp/$(basename $OXIMIRROR)
 			export $(egrep '^INSTALLOXIRELEASE=.*$' /tmp/$(basename $OXIMIRROR))
 			echo -e "${cyan}Actual Release:\t${CYAN}$OXIRELEASE${NC}\n${cyan}New Release:\t${CYAN}$INSTALLOXIRELEASE${NC}"
-	
+
 			if [ "$OXIRELEASE" -lt "$INSTALLOXIRELEASE" ]; then
 				echo -e "\n${RED}--- Initiating oXiScripts update ---${NC}"
 				/tmp/install.sh
@@ -161,7 +161,7 @@ then
 
 	#oxiscripts set function
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-base-set"
-	function ox-base-set {
+	ox-base-set () {
 		. /etc/oxiscripts/setup.sh
 		if [ "$1" == "--help" ]; then
 			echo "set configuration OPTION"
@@ -229,10 +229,10 @@ then
 	}
 
 
-	## VirtualBox stuff
+	##ï¿½VirtualBox stuff
 	#oxivbox-addonsupdate
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-client-addonsupdate"
-	function ox-vbox-client-addonsupdate {
+	ox-vbox-client-addonsupdate () {
 		if [ "$1" == "--help" ]; then
 			echo "updates vbox client addons"
 			return 0

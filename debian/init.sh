@@ -58,7 +58,7 @@ fi
 if [[ $EUID -eq 0 ]];
 then
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade"
-	function ox-root-upgrade {
+	ox-root-upgrade () {
 		if [ "$1" == "--help" ]; then
 			ox-root-upgrade-1 || exit 1
 			ox-root-upgrade-2 || exit 2
@@ -68,7 +68,7 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-2"
-	function ox-root-upgrade-2 {
+	ox-root-upgrade-2 () {
 		if [ "$1" == "--help" ]; then
 			echo "apt-get upgrade"
 			return 0
@@ -77,7 +77,7 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-1"
-	function ox-root-upgrade-1 {
+	ox-root-upgrade-1 () {
 		if [ "$1" == "--help" ]; then
 			echo "apt-get update"
 			return 0

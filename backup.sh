@@ -3,7 +3,7 @@
 source /etc/oxiscripts/setup.sh
 TIMESTAMP=$(date +%Y%m%d%H%M%S)
 
-function rdiffbackup {
+rdiffbackup () {
 	LOGFILE="${LOGDIR}/rdiffbackup.log"
 	echo "Rdiffbackup starting at $(date) for $1 to $2 with parameters: $3" >> ${LOGFILE}
 
@@ -59,7 +59,7 @@ function rdiffbackup {
 }
 
 
-function backup {
+backup () {
 	LOGFILE="${LOGDIR}/backup.log"
 	echo "Backup starting at $(date) for $1 to $2 with options: $3" >> ${LOGFILE}
 
@@ -108,7 +108,7 @@ function backup {
 	fi
 }
 
-function rsyncbackup {
+rsyncbackup () {
 	LOGFILE="${LOGDIR}/rsyncbackup.log"
 	LOCKFILE="/var/run/oxiscripts-rsyncbackup.pid"
 	while $(test -f "${LOCKFILE}"); do sleep 10; done
@@ -140,7 +140,7 @@ function rsyncbackup {
 }
 
 
-function backupinfo {
+backupinfo () {
 	mountbackup
 
 	SIZET="size total:\t$(du -sh $BACKUPDIR/oxibackup/)"
@@ -172,7 +172,7 @@ function backupinfo {
 	umountbackup
 }
 
-function backupcleanup {
+backupcleanup () {
 	mountbackup
 
 	if [ -n $(which fdupes) ]; then

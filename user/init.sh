@@ -2,12 +2,12 @@
 # User init script
 
 # wrapper for scripts
-function ox-usr-checksite {
+ox-usr-checksite () {
 	/etc/oxiscripts/user/checksite.sh ${@}
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-tool-replace"
-function ox-tool-replace {
+ox-tool-replace () {
 	if [ "$1" == "--help" ]; then
 		echo "replace in FILE SEARCH REPLACE"
 		return 0

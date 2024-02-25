@@ -96,7 +96,7 @@ echo -e "${cyan}Linking files \c"
 echo -e "${CYAN}Done${NC}"
 
 echo -e "${cyan}Putting files in place${NC}\c"
-function movevar {
+movevar () {
 	oldvar=$(egrep "$2" $TARGETDIR/$1 | sed 's/\&/\\\&/g')
 	newvar=$(egrep "$2" $TARGETDIR/$1.new | sed 's/\&/\\\&/g')
 	if [  -n "$oldvar" ]; then
@@ -258,7 +258,7 @@ done
 
 # add init.sh to all .bashrc files
 # (Currently doesn't support changing of the install dir!)
-function addtorc {
+addtorc () {
 	if [ ! -n "$(grep oxiscripts/init.sh $1)" ];
 	then
 		echo -e "  ${cyan}Found and editing file: ${CYAN}$1${NC}"

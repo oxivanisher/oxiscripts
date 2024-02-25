@@ -21,14 +21,14 @@ ssh -i $KEY $USER@$HOST mkdir -p $BASEDIR/$HOSTNAME/etc
 rsync -zruc --log-file=/dev/null -e "ssh -i $KEY" /etc/ $USER@$HOST:~/$BASEDIR/$HOSTNAME/etc/ 2>&1 >/dev/null
 
 
-function backupdir {
+backupdir () {
 	echo "backuping [~/$1]"
 	ssh -i $KEY $USER@$HOST mkdir -p $BASEDIR/$HOSTNAME/$1
 	rsync -zruc -e "ssh -i $KEY" ~/$1/ $USER@$HOST:~/$BASEDIR/$HOSTNAME/$1/
 }
 
 
-function syncdir {
+syncdir () {
 	echo "synchronizing [~/$1]"
 	ssh -i $KEY $USER@$HOST mkdir -p $BASEDIR/$1
 	rsync -zruc -e "ssh -i $KEY" $USER@$HOST:~/$BASEDIR/$1/ ~/$1/
@@ -45,4 +45,3 @@ for MYDIR in ${SYNCDIRS}
 do
 	syncdir $MYDIR
 done
-

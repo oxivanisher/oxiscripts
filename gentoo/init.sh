@@ -5,7 +5,7 @@
 if [[ $EUID -eq 0 ]];
 then
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade"
-	function ox-root-upgrade {
+	ox-root-upgrade () {
 		if [ "$1" == "--help" ]; then
 			echo "ox-root-upgrade-1 && ox-root-upgrade-2"
 			return 0
@@ -15,7 +15,7 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-2"
-	function ox-root-upgrade-2 {
+	ox-root-upgrade-2 () {
 		if [ "$1" == "--help" ]; then
 			echo "emerge --update --deep --newuse world -av"
 			return 0
@@ -24,7 +24,7 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-upgrade-1"
-	function ox-root-upgrade-1 {
+	ox-root-upgrade-1 () {
 		if [ "$1" == "--help" ]; then
 			echo "emerge --sync"
 			return 0
@@ -33,7 +33,7 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-optimize"
-	function ox-root-optimize {
+	ox-root-optimize () {
 		if [ "$1" == "--help" ]; then
 			echo "emerge --depclean && revdep-rebuild"
 			return 0
@@ -43,7 +43,7 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-genkernel"
-	function ox-root-genkernel {
+	ox-root-genkernel () {
 		if [ "$1" == "--help" ]; then
 			echo "create new kernel image"
 			return 0
@@ -52,10 +52,10 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-clean"
-#	function ox-zint-getsize {
+#	ox-zint-getsize () {
 #		echo $(du -sh $1 | awk '{print $1}')
 #	}
-	function ox-root-clean {
+	ox-root-clean () {
 		if [ "$1" == "--help" ]; then
 			echo "clear temporary system dirs (eclean -i distfiles)"
 			return 0
@@ -72,7 +72,7 @@ then
 	}
 
 	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-root-maintenance"
-	function ox-root-maintenance {
+	ox-root-maintenance () {
 		if [ "$1" == "--help" ]; then
 			echo "ox-root-upgrade && ox-root-optimize && ox-root-clean"
 			return 0

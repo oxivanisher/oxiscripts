@@ -3,7 +3,7 @@
 #. /etc/oxiscripts/functions.sh
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-get-vms"
-function ox-vbox-get-vms {
+ox-vbox-get-vms () {
 	if [ "$1" == "--help" ]; then
 		echo "show the vms of all users expect root"
 		return 0
@@ -21,7 +21,7 @@ function ox-vbox-get-vms {
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-get-running-vms"
-function ox-vbox-get-running-vms {
+ox-vbox-get-running-vms () {
 	if [ "$1" == "--help" ]; then
 		echo "show all running vms"
 		return 0
@@ -30,7 +30,7 @@ function ox-vbox-get-running-vms {
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-start-vm"
-function ox-vbox-start-vm {
+ox-vbox-start-vm () {
 	if [ "$1" == "--help" ]; then
 		echo "start vm NAME"
 		return 0
@@ -48,7 +48,7 @@ function ox-vbox-start-vm {
 				$( which screen 2>/dev/null) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname
 			fi
 		else
-			su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname" 
+			su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser $( which VBoxHeadless 2>/dev/null ) -s $vmname"
 		fi
 	done
 
@@ -59,7 +59,7 @@ function ox-vbox-start-vm {
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-stop-vm"
-function ox-vbox-stop-vm {
+ox-vbox-stop-vm () {
 	if [ "$1" == "--help" ]; then
 		echo "stop vm NAME"
 		return 0
@@ -77,7 +77,7 @@ function ox-vbox-stop-vm {
                 $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton
             fi
         else
-            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton" 
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname acpipowerbutton"
         fi
     done
 
@@ -89,7 +89,7 @@ function ox-vbox-stop-vm {
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-reset-vm"
-function ox-vbox-reset-vm {
+ox-vbox-reset-vm () {
 	if [ "$1" == "--help" ]; then
 		echo "reset vm NAME"
 		return 0
@@ -107,7 +107,7 @@ function ox-vbox-reset-vm {
                 $( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset
             fi
         else
-            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset" 
+            su $myuser -c "$( which screen 2>/dev/null) -dmS $vmname-$myuser-kill $(which VBoxManage) controlvm $vmname reset"
         fi
     done
 
@@ -119,7 +119,7 @@ function ox-vbox-reset-vm {
 }
 
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-kill-vm"
-function ox-vbox-kill-vm {
+ox-vbox-kill-vm () {
 	if [ "$1" == "--help" ]; then
 		echo "kill vm NAME"
 		return 0
@@ -152,7 +152,7 @@ function ox-vbox-kill-vm {
 
 #ox-vbox-addonsisoupdate
 export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-addonsisoupdate"
-function ox-vbox-addonsisoupdate {
+ox-vbox-addonsisoupdate () {
 	if [ "$1" == "--help" ]; then
 		echo "update the internal addons iso to current virtualbox version"
 		return 0
@@ -192,7 +192,7 @@ function ox-vbox-addonsisoupdate {
         echo -e "${cyan}Opening medium for user: ${CYAN}$USER${NC}"
         output=$(su -l $USER -c "VBoxManage openmedium dvd /usr/share/virtualbox/VBoxGuestAdditions.iso")
     done
-	
+
    	BACKUPIFS=$IFS
 	IFS=$'\n'
  	echo -e "${cyan}Searching for VM's${NC}"
@@ -205,4 +205,3 @@ function ox-vbox-addonsisoupdate {
     done
 	IFS=$BACKUPIFS
 }
-

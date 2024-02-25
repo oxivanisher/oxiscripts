@@ -128,7 +128,7 @@ CYAN='\e[1;36m'
 NC='\e[0m' # No Color
 
 #oxiscripts update function
-function oxiscripts-update {
+oxiscripts-update () {
 	echo -e "${BLUE}--- oXiScripts autoupdate ---${NC}\n"
 	if [[ ${EUID} != 0 ]] ; then
 		echo -e "This function must be run as root. Sorry!"
@@ -166,7 +166,7 @@ function oxiscripts-update {
 }
 
 #oxiscripts set function
-function oxiscripts-set {
+oxiscripts-set () {
 	. /etc/oxiscripts/setup.sh
 
 	if [[ ${EUID} != 0 ]] ; then
@@ -215,7 +215,7 @@ function oxiscripts-set {
 	esac
 }
 
-function oxiscripts-get {
+oxiscripts-get () {
 	. /etc/oxiscripts/setup.sh
 	echo -e "ADMINMAIL\t$ADMINMAIL"
 	echo -e "BACKUPDIR\t$BACKUPDIR"
@@ -224,7 +224,7 @@ function oxiscripts-get {
 	echo -e "OXIMIRROR\t$OXIMIRROR"
 }
 
-function oxireplace {
+oxireplace () {
 	if [ -z "$3" ]; then
 		echo -e "Please specify at lease 3 options! (file from to)"
 	else
@@ -242,7 +242,7 @@ unset use_color safe_term match_lhs
 
 ## VirtualBox stuff
 #oxivbox-addonsupdate
-function oxivbox-addonsupdate {
+oxivbox-addonsupdate () {
 	if [ "$(uname -m)" = "i686" ];
 	then
 		MTYPE="x86"

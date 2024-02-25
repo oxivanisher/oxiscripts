@@ -1,8 +1,8 @@
 #!/bin/bash
 . /etc/oxiscripts/backup.sh
 
-#Please add your executes AFTER the function! 
-function backupvdi {
+#Please add your executes AFTER the function!
+backupvdi () {
     while $(test -f /var/run/oxiscripts-vdibackup.pid); do sleep 10; done
     echo $$ > /var/run/oxiscripts-vdibackup.pid
 
