@@ -13,18 +13,14 @@
 # Test for an interactive shell.  There is no need to set anything
 # past this point for scp and rcp, and it's important to refrain from
 # outputting anything in those cases.
-if [[ $- != *i* ]] ; then
+if [ -z "$-" ] || ! echo "$-" | grep -q "i"; then
 	# Shell is non-interactive. Be done now!
 	return
 fi
 
-# Thanks lightdm ...
+# Thanks to lightdm, the check above is now posix compatible, because it uses sh and ignoring my choice for bash -.-
 # https://unix.stackexchange.com/questions/552459/why-does-lightdm-source-my-profile-even-though-my-login-shell-is-zsh
 # https://bugs.launchpad.net/ubuntu/+source/lightdm/+bug/1468832
-if [[ "$(ps -o args= $PPID)" == *"lightdm"* ]] ; then
-	# Help, its a lightdm login session. Be gone!
-	return
-fi
 
 . /etc/oxiscripts/setup.sh
 
