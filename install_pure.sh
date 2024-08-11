@@ -112,6 +112,7 @@ if [ -e $TARGETDIR/setup.sh ]; then
 
 	movevar "setup.sh" '^export ADMINMAIL=.*$'
 	movevar "setup.sh" '^export BACKUPDIR=.*$'
+	movevar "setup.sh" '^export BACKUPINFORDIFF=.*$'
 	movevar "setup.sh" '^export DEBUG=.*$'
 	movevar "setup.sh" '^export SCRIPTSDIR=.*$'
 #	movevar "setup.sh" '^export OXIMIRROR=.*$'

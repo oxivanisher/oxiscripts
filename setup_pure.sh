@@ -11,6 +11,9 @@ export SCRIPTSDIR=$HOME/scripts
 # your backup mountpoint
 export BACKUPDIR=/mnt/backup/
 
+# disable rsyncbackup info creation (0/1)
+export BACKUPINFORDIFF=1
+
 # your mail command
 export MAILCOMMAND=$( which mailx 2>/dev/null )
 

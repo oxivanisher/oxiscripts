@@ -123,12 +123,12 @@ rsyncbackup () {
 
 	trap "rm -f ${LOCKFILE}" SIGHUP SIGINT SIGTERM
 	if [ -z "$RSYNCPASSWORD" ]; then
-		RSYNCO=$($(which rsync) -avh $3 --log-file=${LOGFILE} ${PARAMETER} $1 $2)
+		RSYNCO=$($(which rsync) -avh --no-g $3 --log-file=${LOGFILE} ${PARAMETER} $1 $2)
 	else
 		echo "$RSYNCPASSWORD" > /etc/oxiscripts/rsyncpw-$$.tmp
 		chmod 600 /etc/oxiscripts/rsyncpw-$$.tmp
 		#RSYNCO=
-		RSYNCO=$($(which rsync) -avh $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp --log-file=${LOGFILE} ${PARAMETER} $1 $2)
+		RSYNCO=$($(which rsync) -avh --no-g $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp --log-file=${LOGFILE} ${PARAMETER} $1 $2)
 		rm /etc/oxiscripts/rsyncpw-$$.tmp
 	fi
 
@@ -146,28 +146,32 @@ backupinfo () {
 	SIZET="size total:\t$(du -sh $BACKUPDIR/oxibackup/)"
 	SIZEH="size host:\t$(du -sh $BACKUPDIR/oxibackup/$(hostname)/)"
 
-	SIZEF="size of oxibackup:\n"
+	SIZEF="## size of oxibackup\n"
 	for FABRIC in $(ls $BACKUPDIR/oxibackup/$(hostname)/); do
-	SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$FABRIC)\n"
-	for MONTH in $(ls $BACKUPDIR/oxibackup/$(hostname)/$FABRIC); do
-		SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$FABRIC/$MONTH | awk '{print $1}')\t\t$MONTH\n"
-	done
-	SIZEF="$SIZEF\n\n"
+		SIZEF="${SIZEF}### $BACKUPDIR/oxibackup/$(hostname)/$FABRIC\n$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$FABRIC| awk '{print $1}') total\n"
+		for MONTH in $(ls $BACKUPDIR/oxibackup/$(hostname)/$FABRIC); do
+			SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$FABRIC/$MONTH | awk '{print $1}')\t\t$MONTH\n"
+		done
+		SIZEF="$SIZEF\n"
 	done
 
 	if [ -d $BACKUPDIR/oxirdiffbackup/$(hostname)/ ]; then
-		SIZEF="$SIZEFsize of oxirdiffbackup:\n"
-		for FABRIC in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname)/); do
-		SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC)\n"
-		for FOLDER in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC); do
-			SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC/$FOLDER | awk '{print $1}')\t\t$FOLDER\n"
-		done
-		SIZEF="$SIZEF\n"
-		done
+		if [ $BACKUPINFORDIFF -gt 0 ]; then
+			SIZEF="${SIZEF}## size of oxirdiffbackup\n"
+			for FABRIC in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname)/); do
+				SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC)\n"
+				# This is creating a LOT of disk usage ... disabling it for now
+				# for FOLDER in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC); do
+				# 	SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC/$FOLDER | awk '{print $1}')\t\t$FOLDER\n"
+				# done
+				# SIZEF="$SIZEF\n"
+			done
+		else
+			SIZEF="${SIZEF}## not analyzing oxirdiffbackups because backupinfordiff is disabled\n\n"
+		fi
 	fi
 
-
-	notifyadmin "$(hostname) backup info (uptime: $(uptime))" "-- $(hostname) backup usage --\n\n$SIZET\n$SIZEH\n\n-- fabrics --\n$SIZEF"
+	notifyadmin "$(hostname) backup info (uptime: $(uptime))" "# $(hostname) backup usage\n$SIZET\n$SIZEH\n\n# fabrics\n$SIZEF"
 
 	umountbackup
 }
@@ -198,7 +202,7 @@ backupcleanup () {
 		SIZEAFTER=$(du -sh $BACKUPDIR/oxibackup/$(hostname))
 
 		if [ $DEBUG -gt 0 ]; then
-			notifyadmin "$(hostname) backup cleanup" "-- $(hostname) backup cleanup --\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
+			notifyadmin "$(hostname) backup cleanup" "# $(hostname) backup cleanup\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
 		fi
 	else
 		nofityadmin "backup cleanup FAIL" "please install fdupes!"

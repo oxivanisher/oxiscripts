@@ -191,6 +191,19 @@ oxiscripts-set () {
 			fi
 		;;
 
+		backupinfordiff)
+			echo -e "Toggling BACKUPINFORDIFF to: \c"
+			if [ $BACKUPINFORDIFF -eq 0 ]; then
+				echo -e "${RED}Enabled${NC}"
+				sed 's/BACKUPINFORDIFF=0/BACKUPINFORDIFF=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+				mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+			else
+				echo -e "${BLUE}Disabled${NC}"
+				sed 's/BACKUPINFORDIFF=1/BACKUPINFORDIFF=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+				mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+			fi
+		;;
+
 		mirror)
 			if [ -n "$2" ]; then
 				echo -e "Setting MIRROR to: ${RED}$2${NC}"
@@ -213,7 +226,7 @@ oxiscripts-set () {
 
 		*)
 			echo -e "No corresponding keyword found: $1"
-			echo -e "\tPossible are: debug, mirror and mail"
+			echo -e "\tPossible are: debug, backupinfordiff, mirror and mail"
 		;;
 
 	esac
@@ -223,6 +236,7 @@ oxiscripts-get () {
 	. /etc/oxiscripts/setup.sh
 	echo -e "ADMINMAIL\t$ADMINMAIL"
 	echo -e "BACKUPDIR\t$BACKUPDIR"
+	echo -e "BACKUPINFORDIFF\t$BACKUPINFORDIFF"
 	echo -e "DEBUG\t\t$DEBUG"
 	echo -e "SCRIPTSDIR\t$SCRIPTSDIR"
 	echo -e "OXIMIRROR\t$OXIMIRROR"

@@ -49,6 +49,7 @@ ox-base-show () {
 	. /etc/oxiscripts/setup.sh
 	echo -e "ADMINMAIL\t$ADMINMAIL"
 	echo -e "BACKUPDIR\t$BACKUPDIR"
+	echo -e "BACKUPINFORDIFF\t$BACKUPINFORDIFF"
 	echo -e "DEBUG\t\t$DEBUG"
 	echo -e "SCRIPTSDIR\t$SCRIPTSDIR"
 	echo -e "OXIMIRROR\t$OXIMIRROR"
@@ -185,6 +186,19 @@ then
 					fi
 				;;
 
+				backupinfordiff)
+					echo -e "${cyan}Toggling ${CYAN}BACKUPINFORDIFF to: \c"
+					if [ $DEBUG -eq 0 ]; then
+						echo -e "${RED}Enabled${NC}"
+						sed 's/BACKUPINFORDIFF=0/BACKUPINFORDIFF=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+					else
+						echo -e "${BLUE}Disabled${NC}"
+						sed 's/BACKUPINFORDIFF=1/BACKUPINFORDIFF=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
+						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+					fi
+				;;
+
 				color)
 					echo -e "${cyan}Toggling ${CYAN}COLOR to: \c"
 					if [ $OXICOLOR -eq 0 ]; then
@@ -220,7 +234,7 @@ then
 
 				*)
 					echo -e "${RED}No corresponding keyword found: $1${NC}"
-					echo -e "\t${CYAN}Possible are: debug, color, mirror and mail${NC}"
+					echo -e "\t${CYAN}Possible are: debug, backupinfordiff, color, mirror and mail${NC}"
 				;;
 
 			esac

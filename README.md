@@ -8,7 +8,7 @@ All of this is done with bash, be warned! Yes, today it would simply be ansible-
 ## Things to know
 * The gentoo parts of this repository where not used or tested for at least 10 years
 * If changes in the installer are required, please edit the `install_pure.sh` file
-* To create a new `install.sh` file (which contains all required code withing), run `make_release.sh`
+* To create a new `install.sh` file (which contains all required code withing), run `make_release.sh` (and the `sharutils` package needs to be installed on debian)
 * The runtime timestamp of a `make_release.sh` run is imprinted in the resulting `install.sh` file (variable `INSTALLOXIRELEASE`). With this mechanism, it is able to detect if a update is required.
 * Configure the variable `OXIMIRROR` variable to point to your own `install.sh`
 * Some basic configuration is done in `/etc/oxiscripts/setup.sh`
