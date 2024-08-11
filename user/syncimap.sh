@@ -2,13 +2,13 @@
 
 logfile="synclog.txt"
 
-host1=85.90.1.13
+host1=
 #host1 is Source
 
-host2=172.16.25.130
+host2=
 #host2 is Dest
 
-domain=acceleris.ch
+domain=
 #domain is where email account is
 #everything after @ symbol
 
