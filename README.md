@@ -12,3 +12,4 @@ All of this is done with bash, be warned! Yes, today it would simply be ansible-
 * The runtime timestamp of a `make_release.sh` run is imprinted in the resulting `install.sh` file (variable `INSTALLOXIRELEASE`). With this mechanism, it is able to detect if a update is required.
 * Configure the variable `OXIMIRROR` variable to point to your own `install.sh`
 * Some basic configuration is done in `/etc/oxiscripts/setup.sh`
+* Dash is NOT supported. This is only for real shells.

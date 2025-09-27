@@ -18,6 +18,11 @@ if [ -z "$-" ] || ! echo "$-" | grep -q "i"; then
 	return
 fi
 
+# dash is neither bash nor sh, even though it tries to cosplay as one. -.-
+if $(readlink -f /proc/$$/exe | grep -q 'dash'); then
+	return
+fi
+
 # Thanks to lightdm, the check above is now posix compatible, because it uses sh and ignoring my choice for bash -.-
 # https://unix.stackexchange.com/questions/552459/why-does-lightdm-source-my-profile-even-though-my-login-shell-is-zsh
 # https://bugs.launchpad.net/ubuntu/+source/lightdm/+bug/1468832
