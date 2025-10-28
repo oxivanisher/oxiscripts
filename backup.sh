@@ -21,7 +21,8 @@ rdiffbackup () {
 
 
 	$(which rdiff-backup) $PARAMETER $1 $FOLDERNAME &>>${LOGFILE}
-	$(which rdiff-backup) --force --remove-older-than $3 $FOLDERNAME &>>${LOGFILE}
+	$(which rdiff-backup) --force remove increments --older-than $3 $FOLDERNAME &>>${LOGFILE}
+
 
 	SIZEF=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$2)
 	SIZEH=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/)
