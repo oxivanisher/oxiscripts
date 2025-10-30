@@ -20,7 +20,7 @@ rdiffbackup () {
 	done
 
 
-	$(which rdiff-backup) $PARAMETER $1 $FOLDERNAME &>>${LOGFILE}
+	$(which rdiff-backup) backup $PARAMETER $1 $FOLDERNAME &>>${LOGFILE}
 	$(which rdiff-backup) --force remove increments --older-than $3 $FOLDERNAME &>>${LOGFILE}
 
 
