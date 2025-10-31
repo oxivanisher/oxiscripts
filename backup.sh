@@ -8,7 +8,7 @@ rdiffbackup () {
 	echo "Rdiffbackup starting at $(date) for $1 to $2 with parameters: $3" >> ${LOGFILE}
 
 	mountbackup
-	FOLDERNAME="/$BACKUPDIR/oxirdiffbackup/$(hostname)/$2/"
+	FOLDERNAME="/$BACKUPDIR/oxirdiffbackup/$(hostname -s)/$2/"
 
 	CHOWNO=$(chmod 777 $FOLDERNAME)
 
@@ -24,11 +24,11 @@ rdiffbackup () {
 	$(which rdiff-backup) --force remove increments --older-than $3 $FOLDERNAME &>>${LOGFILE}
 
 
-	SIZEF=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$2)
-	SIZEH=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/)
+	SIZEF=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname -s)/$2)
+	SIZEH=$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname -s)/)
 	SIZET=$(du -sh $BACKUPDIR/oxirdiffbackup/)
 
-	NEWLISTING=$(ls -lha $BACKUPDIR/oxirdiffbackup/$(hostname)/$2/)
+	NEWLISTING=$(ls -lha $BACKUPDIR/oxirdiffbackup/$(hostname -s)/$2/)
 	MOUNT=$(mount | grep $BACKUPDIR 2>&1)
 
 	umountbackup
@@ -55,7 +55,7 @@ rdiffbackup () {
 
 	echo -e "Rdiffbackup finished.\n" >> ${LOGFILE}
 	if [ $DEBUG -gt 0 ]; then
-		notifyadmin "$(hostname) $2 rdiff-backup" "${MESSAGE}"
+		notifyadmin "$(hostname -s) $2 rdiff-backup" "${MESSAGE}"
 	fi
 }
 
@@ -65,16 +65,16 @@ backup () {
 	echo "Backup starting at $(date) for $1 to $2 with options: $3" >> ${LOGFILE}
 
 	mountbackup
-	FILENAME="/$BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m)/$(basename $1).$TIMESTAMP.tar.bz2"
+	FILENAME="/$BACKUPDIR/oxibackup/$(hostname -s)/$2/$(date +%Y%m)/$(basename $1).$TIMESTAMP.tar.bz2"
 
-	MKDIRO=$(mkdir -p $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) 2>&1)
+	MKDIRO=$(mkdir -p $BACKUPDIR/oxibackup/$(hostname -s)/$2/$(date +%Y%m) 2>&1)
 	TARO=$(/bin/tar ${BACKUP_OPTIONS} -cjf $FILENAME $1 &>>${LOGFILE})
 
-	SIZEF=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$2)
-	SIZEH=$(du -sh $BACKUPDIR/oxibackup/$(hostname)/)
+	SIZEF=$(du -sh $BACKUPDIR/oxibackup/$(hostname -s)/$2)
+	SIZEH=$(du -sh $BACKUPDIR/oxibackup/$(hostname -s)/)
 	SIZET=$(du -sh $BACKUPDIR/oxibackup/)
 
-	NEWLISTING=$(ls -lha $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m))
+	NEWLISTING=$(ls -lha $BACKUPDIR/oxibackup/$(hostname -s)/$2/$(date +%Y%m))
 	MOUNT=$(mount | grep $BACKUPDIR 2>&1)
 
 	umountbackup
@@ -101,11 +101,11 @@ backup () {
 
 	SIZE="size total:\t$SIZET\nsize host:\t$SIZEH\nsize fabric:\t$SIZEF"
 
-	MESSAGE="-- FILES IN $BACKUPDIR/oxibackup/$(hostname)/$2/$(date +%Y%m) --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$TARO$MOUNTO$UMOUNTO$MKDIRO"
+	MESSAGE="-- FILES IN $BACKUPDIR/oxibackup/$(hostname -s)/$2/$(date +%Y%m) --\n$NEWLISTING\n\n-- SIZE INFOS --\n$SIZE\n\n-- DEBUG INFOS --\n$MOUNT$TARO$MOUNTO$UMOUNTO$MKDIRO"
 
 	echo -e "${MESSAGE}\nBackup finished.\n" >> ${LOGFILE}
 	if [ $DEBUG -gt 0 ]; then
-		notifyadmin "$(hostname) $2 backup" "${MESSAGE}"
+		notifyadmin "$(hostname -s) $2 backup" "${MESSAGE}"
 	fi
 }
 
@@ -135,7 +135,7 @@ rsyncbackup () {
 
 	echo -e "Rsyncbackup finished.\n" >> ${LOGFILE}
 	if [ $DEBUG -gt 0 ]; then
-		notifyadmin "$(hostname) $2 rsync-backup" "-- DEBUG INFOS --\n$RSYNCO"
+		notifyadmin "$(hostname -s) $2 rsync-backup" "-- DEBUG INFOS --\n$RSYNCO"
 	fi
 	rm -f "${LOCKFILE}"
 }
@@ -145,25 +145,25 @@ backupinfo () {
 	mountbackup
 
 	SIZET="size total:\t$(du -sh $BACKUPDIR/oxibackup/)"
-	SIZEH="size host:\t$(du -sh $BACKUPDIR/oxibackup/$(hostname)/)"
+	SIZEH="size host:\t$(du -sh $BACKUPDIR/oxibackup/$(hostname -s)/)"
 
 	SIZEF="## size of oxibackup\n"
-	for FABRIC in $(ls $BACKUPDIR/oxibackup/$(hostname)/); do
-		SIZEF="${SIZEF}### $BACKUPDIR/oxibackup/$(hostname)/$FABRIC\n$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$FABRIC| awk '{print $1}') total\n"
-		for MONTH in $(ls $BACKUPDIR/oxibackup/$(hostname)/$FABRIC); do
-			SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxibackup/$(hostname)/$FABRIC/$MONTH | awk '{print $1}')\t\t$MONTH\n"
+	for FABRIC in $(ls $BACKUPDIR/oxibackup/$(hostname -s)/); do
+		SIZEF="${SIZEF}### $BACKUPDIR/oxibackup/$(hostname -s)/$FABRIC\n$(du -sh $BACKUPDIR/oxibackup/$(hostname -s)/$FABRIC| awk '{print $1}') total\n"
+		for MONTH in $(ls $BACKUPDIR/oxibackup/$(hostname -s)/$FABRIC); do
+			SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxibackup/$(hostname -s)/$FABRIC/$MONTH | awk '{print $1}')\t\t$MONTH\n"
 		done
 		SIZEF="$SIZEF\n"
 	done
 
-	if [ -d $BACKUPDIR/oxirdiffbackup/$(hostname)/ ]; then
+	if [ -d $BACKUPDIR/oxirdiffbackup/$(hostname -s)/ ]; then
 		if [ $BACKUPINFORDIFF -gt 0 ]; then
 			SIZEF="${SIZEF}## size of oxirdiffbackup\n"
-			for FABRIC in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname)/); do
-				SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC)\n"
+			for FABRIC in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname -s)/); do
+				SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname -s)/$FABRIC)\n"
 				# This is creating a LOT of disk usage ... disabling it for now
-				# for FOLDER in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC); do
-				# 	SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname)/$FABRIC/$FOLDER | awk '{print $1}')\t\t$FOLDER\n"
+				# for FOLDER in $(ls $BACKUPDIR/oxirdiffbackup/$(hostname -s)/$FABRIC); do
+				# 	SIZEF="$SIZEF$(du -sh $BACKUPDIR/oxirdiffbackup/$(hostname -s)/$FABRIC/$FOLDER | awk '{print $1}')\t\t$FOLDER\n"
 				# done
 				# SIZEF="$SIZEF\n"
 			done
@@ -172,7 +172,7 @@ backupinfo () {
 		fi
 	fi
 
-	notifyadmin "$(hostname) backup info (uptime: $(uptime))" "# $(hostname) backup usage\n$SIZET\n$SIZEH\n\n# fabrics\n$SIZEF"
+	notifyadmin "$(hostname -s) backup info (uptime: $(uptime))" "# $(hostname -s) backup usage\n$SIZET\n$SIZEH\n\n# fabrics\n$SIZEF"
 
 	umountbackup
 }
@@ -181,17 +181,17 @@ backupcleanup () {
 	mountbackup
 
 	if [ -n $(which fdupes) ]; then
-		SIZEBEFORE=$(du -sh $BACKUPDIR/oxibackup/$(hostname))
+		SIZEBEFORE=$(du -sh $BACKUPDIR/oxibackup/$(hostname -s))
 		COUNT=0
-		for FILE in $(fdupes -r -f -q $BACKUPDIR/oxibackup/$(hostname)); do
+		for FILE in $(fdupes -r -f -q $BACKUPDIR/oxibackup/$(hostname -s)); do
 			COUNT=$(($COUNT+1))
 			rm $FILE
 		done
 
 		if [[ $1 =~ ^-?[0-9]+$ ]]; then
-			find "$BACKUPDIR/oxibackup/$(hostname)" -type f -mtime +$1 -exec rm {} \;
+			find "$BACKUPDIR/oxibackup/$(hostname -s)" -type f -mtime +$1 -exec rm {} \;
 
-			find "$BACKUPDIR/oxibackup/$(hostname)" -type d | while read LINE;
+			find "$BACKUPDIR/oxibackup/$(hostname -s)" -type d | while read LINE;
 			do
 			        if [ $(find "$LINE" -type f | wc -l) == 0 ];
 			        then
@@ -200,10 +200,10 @@ backupcleanup () {
 			done
 		fi
 
-		SIZEAFTER=$(du -sh $BACKUPDIR/oxibackup/$(hostname))
+		SIZEAFTER=$(du -sh $BACKUPDIR/oxibackup/$(hostname -s))
 
 		if [ $DEBUG -gt 0 ]; then
-			notifyadmin "$(hostname) backup cleanup" "# $(hostname) backup cleanup\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
+			notifyadmin "$(hostname -s) backup cleanup" "# $(hostname -s) backup cleanup\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
 		fi
 	else
 		nofityadmin "backup cleanup FAIL" "please install fdupes!"
