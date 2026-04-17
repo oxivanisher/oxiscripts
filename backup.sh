@@ -10,9 +10,8 @@ rdiffbackup () {
 	mountbackup
 	FOLDERNAME="/$BACKUPDIR/oxirdiffbackup/$(hostname -s)/$2/"
 
-	CHOWNO=$(chmod 777 $FOLDERNAME)
-
 	MKDIRO=$(mkdir -p $FOLDERNAME 2>&1)
+	CHOWNO=$(chmod 750 $FOLDERNAME)
 
 	PARAMETER=""
 	for DIR in ${EXCLUDED_DIR}; do
@@ -180,7 +179,7 @@ backupinfo () {
 backupcleanup () {
 	mountbackup
 
-	if [ -n $(which fdupes) ]; then
+	if command -v fdupes &>/dev/null; then
 		SIZEBEFORE=$(du -sh $BACKUPDIR/oxibackup/$(hostname -s))
 		COUNT=0
 		for FILE in $(fdupes -r -f -q $BACKUPDIR/oxibackup/$(hostname -s)); do
@@ -206,7 +205,7 @@ backupcleanup () {
 			notifyadmin "$(hostname -s) backup cleanup" "# $(hostname -s) backup cleanup\n\nfiles cleaned:\t$COUNT\nsize before:\t$SIZEBEFORE\nsize after:\t$SIZEAFTER"
 		fi
 	else
-		nofityadmin "backup cleanup FAIL" "please install fdupes!"
+		notifyadmin "backup cleanup FAIL" "please install fdupes!"
 	fi
 
 	umountbackup
