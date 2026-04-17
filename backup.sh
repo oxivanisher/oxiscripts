@@ -122,15 +122,7 @@ rsyncbackup () {
 
 
 	trap "rm -f ${LOCKFILE}" SIGHUP SIGINT SIGTERM
-	if [ -z "$RSYNCPASSWORD" ]; then
-		RSYNCO=$($(which rsync) -avh --no-g $3 --log-file=${LOGFILE} ${PARAMETER} $1 $2)
-	else
-		echo "$RSYNCPASSWORD" > /etc/oxiscripts/rsyncpw-$$.tmp
-		chmod 600 /etc/oxiscripts/rsyncpw-$$.tmp
-		#RSYNCO=
-		RSYNCO=$($(which rsync) -avh --no-g $3 --password-file=/etc/oxiscripts/rsyncpw-$$.tmp --log-file=${LOGFILE} ${PARAMETER} $1 $2)
-		rm /etc/oxiscripts/rsyncpw-$$.tmp
-	fi
+	RSYNCO=$($(which rsync) -avh --no-g $3 --log-file=${LOGFILE} ${PARAMETER} $1 $2)
 
 	echo -e "Rsyncbackup finished.\n" >> ${LOGFILE}
 	if [ $DEBUG -gt 0 ]; then
