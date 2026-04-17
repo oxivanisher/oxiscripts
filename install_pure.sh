@@ -77,8 +77,8 @@ echo -e "${CYAN}Done${NC}"
 
 echo -e "${cyan}Putting files in place${NC}\c"
 movevar () {
-	oldvar=$(egrep "$2" $TARGETDIR/$1 | sed 's/\&/\\\&/g')
-	newvar=$(egrep "$2" $TARGETDIR/$1.new | sed 's/\&/\\\&/g')
+	oldvar=$(grep -E "$2" $TARGETDIR/$1 | sed 's/\&/\\\&/g')
+	newvar=$(grep -E "$2" $TARGETDIR/$1.new | sed 's/\&/\\\&/g')
 	if [  -n "$oldvar" ]; then
 		sed -e "s|$newvar|$oldvar|g" $TARGETDIR/$1.new > $TARGETDIR/$1.tmp
 		mv $TARGETDIR/$1.tmp $TARGETDIR/$1.new
