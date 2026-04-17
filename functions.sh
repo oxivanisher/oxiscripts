@@ -254,7 +254,7 @@ then
 fi
 
 # Load variables
-if [ -f $SCRIPTDIR/init.sh ];
+if [ -f $SCRIPTSDIR/init.sh ];
 then
-    . $SCRIPTDIR/init.sh
+    . $SCRIPTSDIR/init.sh
 fi

@@ -264,9 +264,9 @@ unset use_color safe_term match_lhs
 
 
 # Load variables
-if [ -f $SCRIPTDIR/init.sh ];
+if [ -f $SCRIPTSDIR/init.sh ];
 then
-    . $SCRIPTDIR/init.sh
+    . $SCRIPTSDIR/init.sh
 fi
 
 # Add scripts dir to $PATH
@@ -279,44 +279,44 @@ then
     PATH=${PATH}:$HOME/bin/
 fi
 
-if [ -f $SCRIPTDIR/checkfreespace.sh ];
+if [ -f $SCRIPTSDIR/checkfreespace.sh ];
 then
-	alias oxi_checkfreespace='$SCRIPTDIR/checkfreespace.sh'
+	alias oxi_checkfreespace='$SCRIPTSDIR/checkfreespace.sh'
 fi
 
-if [ -f $SCRIPTDIR/checkhost.sh ];
+if [ -f $SCRIPTSDIR/checkhost.sh ];
 then
-        alias oxi_checkhost='$SCRIPTDIR/checkhost.sh'
+        alias oxi_checkhost='$SCRIPTSDIR/checkhost.sh'
 fi
 
-if [ -f $SCRIPTDIR/checkpartitions.sh ];
+if [ -f $SCRIPTSDIR/checkpartitions.sh ];
 then
-        alias oxi_checkpartitions='$SCRIPTDIR/checkpartitions.sh'
+        alias oxi_checkpartitions='$SCRIPTSDIR/checkpartitions.sh'
 fi
 
-if [ -f $SCRIPTDIR/cleanup.sh ];
+if [ -f $SCRIPTSDIR/cleanup.sh ];
 then
-        alias oxi_cleanup='$SCRIPTDIR/cleanup.sh'
+        alias oxi_cleanup='$SCRIPTSDIR/cleanup.sh'
 fi
 
-if [ -f $SCRIPTDIR/scanlan.sh ];
+if [ -f $SCRIPTSDIR/scanlan.sh ];
 then
-        alias oxi_scanlan='$SCRIPTDIR/scanlan.sh'
+        alias oxi_scanlan='$SCRIPTSDIR/scanlan.sh'
 fi
 
-if [ -f $SCRIPTDIR/shortbackup.sh ];
+if [ -f $SCRIPTSDIR/shortbackup.sh ];
 then
-        alias oxi_shortbackup='$SCRIPTDIR/shortbackup.sh'
+        alias oxi_shortbackup='$SCRIPTSDIR/shortbackup.sh'
 fi
 
-if [ -f $SCRIPTDIR/sync.sh ];
+if [ -f $SCRIPTSDIR/sync.sh ];
 then
-        alias oxi_sync='$SCRIPTDIR/sync.sh'
+        alias oxi_sync='$SCRIPTSDIR/sync.sh'
 fi
 
-if [ -f $SCRIPTDIR/sysmaint.sh ];
+if [ -f $SCRIPTSDIR/sysmaint.sh ];
 then
-        alias oxi_sysmaint='$SCRIPTDIR/sysmaint.sh'
+        alias oxi_sysmaint='$SCRIPTSDIR/sysmaint.sh'
 fi
 
 # expanding bash history size
