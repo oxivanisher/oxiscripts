@@ -120,8 +120,11 @@ rsyncbackup () {
 		PARAMETER+=("--exclude" "$DIR")
 	done
 
+	EXTRA_OPTS=()
+	[ -n "$3" ] && EXTRA_OPTS=($3)
+
 	trap "flock -u 8; exec 8>&-" SIGHUP SIGINT SIGTERM
-	RSYNCO=$($(which rsync) -avh --no-g "$3" --log-file="${LOGFILE}" "${PARAMETER[@]}" "$1" "$2")
+	RSYNCO=$($(which rsync) -avh --no-g --log-file="${LOGFILE}" "${PARAMETER[@]}" "${EXTRA_OPTS[@]}" "$1" "$2")
 
 	echo -e "Rsyncbackup finished.\n" >> "${LOGFILE}"
 	if [ $DEBUG -gt 0 ]; then
