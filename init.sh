@@ -107,7 +107,6 @@ if ${use_color} ; then
 	#BSD#@export CLICOLOR=1
 	#GNU#@alias ls='ls --color=auto'
 	alias grep='grep --colour=auto'
-	alias grep -E='grep -E --colour=auto'
 	alias fgrep='fgrep --colour=auto'
 else
 	if [[ ${EUID} == 0 ]] ; then
