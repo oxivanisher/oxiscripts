@@ -7,7 +7,7 @@ backup /tmp/dpkg-selections system
 rm /tmp/dpkg-selections
 
 # Mount /boot before backup?
-needed="$(grep "/boot" /etc/fstab | egrep -v "^#.*/boot.*" | awk '{ print $2 }')"
+needed="$(grep "/boot" /etc/fstab | grep -Ev "^#.*/boot.*" | awk '{ print $2 }')"
 already_mounted=$(grep /boot /etc/mtab)
 if [ "$already_mounted" == "" ];
 then
@@ -23,6 +23,11 @@ fi
 if [ "$mountme" == "1" ]; then mount /boot; fi
 BACKUP_OPTIONS="--exclude=/boot/grub/grubenv" backup /boot system
 if [ "$mountme" == "1" ]; then umount /boot; fi
+
+# Backup Raspberry Pi firmware config if present
+if [ -f /boot/firmware/config.txt ]; then
+	backup /boot/firmware/config.txt system
+fi
 
 # Backup the entire /etc .. like magic ;)
 backup /etc system
