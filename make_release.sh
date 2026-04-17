@@ -34,8 +34,8 @@ echo -e "Creating definitive install.sh file:"
 		tar -C $OXIRELEASEDIR -zc . | uuencode - >> install.sh
 	echo -e "Size: $(du -h install.sh | awk '{print $1}')\n"
 
-echo -e "Calculating MD5 Sum: \c"
-	md5sum install.sh > install.sh.md5
+echo -e "Calculating SHA256 Sum: \c"
+	sha256sum install.sh > install.sh.sha256
 echo -e "Done"
 
 echo -e "Making file executable: \c"

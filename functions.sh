@@ -131,16 +131,16 @@ then
 		fi
 
 		echo -e "${cyan}Downloading:\t\c${RED}"
-		wget -qq -r $OXIMIRROR -O /tmp/$(basename $OXIMIRROR)
-		wget -qq -r $OXIMIRROR.md5 -O /tmp/$(basename $OXIMIRROR.md5)
+		wget -q "$OXIMIRROR" -O /tmp/"$(basename "$OXIMIRROR")"
+		wget -q "$OXIMIRROR.sha256" -O /tmp/"$(basename "$OXIMIRROR").sha256"
 		echo -e "${CYAN}Done"
 
-		echo -e "${cyan}MD5 Checksum:\t\c"
-		if [ "$( $(which md5sum) /tmp/$(basename $OXIMIRROR) | awk '{print $1}')" = "$(cat /tmp/$(basename $OXIMIRROR).md5 | awk '{print $1}')" ]; then
+		echo -e "${cyan}SHA256 Checksum:\t\c"
+		if [ "$(sha256sum /tmp/"$(basename "$OXIMIRROR")" | awk '{print $1}')" = "$(awk '{print $1}' /tmp/"$(basename "$OXIMIRROR").sha256")" ]; then
 			echo -e "${CYAN}OK${NC}"
 
-			chmod +x /tmp/$(basename $OXIMIRROR)
-			export $(grep -E '^INSTALLOXIRELEASE=.*$' /tmp/$(basename $OXIMIRROR))
+			chmod +x /tmp/"$(basename "$OXIMIRROR")"
+			INSTALLOXIRELEASE=$(grep -E '^INSTALLOXIRELEASE=' /tmp/"$(basename "$OXIMIRROR")" | cut -d= -f2)
 			echo -e "${cyan}Actual Release:\t${CYAN}$OXIRELEASE${NC}\n${cyan}New Release:\t${CYAN}$INSTALLOXIRELEASE${NC}"
 
 			if [ "$OXIRELEASE" -lt "$INSTALLOXIRELEASE" ]; then
@@ -172,17 +172,18 @@ then
 		if [[ ${EUID} != 0 ]] ; then
 			echo -e "${RED}This function must be run as root. Sorry!${NC}"
 		else
+			TMPSETUP=$(mktemp)
 			case "$1" in
 				debug)
 					echo -e "${cyan}Toggling ${CYAN}DEBUG to: \c"
 					if [ $DEBUG -eq 0 ]; then
 						echo -e "${RED}Enabled${NC}"
-						sed 's/DEBUG=0/DEBUG=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed 's/DEBUG=0/DEBUG=1/g' /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					else
 						echo -e "${BLUE}Disabled${NC}"
-						sed 's/DEBUG=1/DEBUG=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed 's/DEBUG=1/DEBUG=0/g' /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					fi
 				;;
 
@@ -190,12 +191,12 @@ then
 					echo -e "${cyan}Toggling ${CYAN}BACKUPINFORDIFF to: \c"
 					if [ $BACKUPINFORDIFF -eq 0 ]; then
 						echo -e "${RED}Enabled${NC}"
-						sed 's/BACKUPINFORDIFF=0/BACKUPINFORDIFF=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed 's/BACKUPINFORDIFF=0/BACKUPINFORDIFF=1/g' /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					else
 						echo -e "${BLUE}Disabled${NC}"
-						sed 's/BACKUPINFORDIFF=1/BACKUPINFORDIFF=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed 's/BACKUPINFORDIFF=1/BACKUPINFORDIFF=0/g' /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					fi
 				;;
 
@@ -203,20 +204,20 @@ then
 					echo -e "${cyan}Toggling ${CYAN}COLOR to: \c"
 					if [ $OXICOLOR -eq 0 ]; then
 						echo -e "${RED}Enabled${NC}"
-						sed 's/OXICOLOR=0/OXICOLOR=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed 's/OXICOLOR=0/OXICOLOR=1/g' /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					else
 						echo -e "${BLUE}Disabled${NC}"
-						sed 's/OXICOLOR=1/OXICOLOR=0/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed 's/OXICOLOR=1/OXICOLOR=0/g' /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					fi
 				;;
 
 				mirror)
 					if [ -n "$2" ]; then
 						echo -e "${cyan}Setting MIRROR to: ${RED}$2${NC}"
-						sed "s|OXIMIRROR=$(echo $OXIMIRROR)|OXIMIRROR=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed "s|OXIMIRROR=$(echo $OXIMIRROR)|OXIMIRROR=$(echo $2)|g" /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					else
 						echo -e "${RED}Please add a URL${NC}"
 					fi
@@ -225,8 +226,8 @@ then
 				mail)
 					if [ -n "$2" ]; then
 						echo -e "${cyan}Setting MAIL to: ${RED}$2${NC}"
-						sed "s|ADMINMAIL=$(echo $ADMINMAIL)|ADMINMAIL=$(echo $2)|g" /etc/oxiscripts/setup.sh > /tmp/setup.sh
-						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
+						sed "s|ADMINMAIL=$(echo $ADMINMAIL)|ADMINMAIL=$(echo $2)|g" /etc/oxiscripts/setup.sh > "$TMPSETUP"
+						mv "$TMPSETUP" /etc/oxiscripts/setup.sh
 					else
 						echo -e "${RED}Please add a Email Adress${NC}"
 					fi
@@ -238,6 +239,7 @@ then
 				;;
 
 			esac
+			rm -f "$TMPSETUP"
 			echo -e "${red}Only new spawned enviroments have the variable set. Please relog.${NC}"
 		fi
 	}

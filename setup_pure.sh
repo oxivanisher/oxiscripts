@@ -35,8 +35,9 @@ export OXIRELEASE=xxx
 LOGDIR="/var/log/oxiscripts/"
 
 mountbackup () {
-    while $(test -f /var/run/oxiscripts-backup.pid); do sleep 10; done
-    echo $$ > /var/run/oxiscripts-backup.pid
+    exec 9>/var/run/oxiscripts-backup.lock
+    flock -x 9
+    echo $$ >&9
 
     # please set your mount options
     # examples:
@@ -49,10 +50,11 @@ umountbackup () {
 
     # please set your umount options
     # examples:
-    # NFS	MOUNTO=$(umount $BACKUPDIR 2>&1)
-    # FOLDER	MOUNTO=""
+    # NFS	UMOUNTO=$(umount $BACKUPDIR 2>&1)
+    # FOLDER	UMOUNTO=""
     UMOUNTO=""
-    rm /var/run/oxiscripts-backup.pid
+    flock -u 9
+    exec 9>&-
 }
 
 
