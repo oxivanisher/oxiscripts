@@ -140,7 +140,7 @@ then
 			echo -e "${CYAN}OK${NC}"
 
 			chmod +x /tmp/$(basename $OXIMIRROR)
-			export $(egrep '^INSTALLOXIRELEASE=.*$' /tmp/$(basename $OXIMIRROR))
+			export $(grep -E '^INSTALLOXIRELEASE=.*$' /tmp/$(basename $OXIMIRROR))
 			echo -e "${cyan}Actual Release:\t${CYAN}$OXIRELEASE${NC}\n${cyan}New Release:\t${CYAN}$INSTALLOXIRELEASE${NC}"
 
 			if [ "$OXIRELEASE" -lt "$INSTALLOXIRELEASE" ]; then
@@ -188,7 +188,7 @@ then
 
 				backupinfordiff)
 					echo -e "${cyan}Toggling ${CYAN}BACKUPINFORDIFF to: \c"
-					if [ $DEBUG -eq 0 ]; then
+					if [ $BACKUPINFORDIFF -eq 0 ]; then
 						echo -e "${RED}Enabled${NC}"
 						sed 's/BACKUPINFORDIFF=0/BACKUPINFORDIFF=1/g' /etc/oxiscripts/setup.sh > /tmp/setup.sh
 						mv /tmp/setup.sh /etc/oxiscripts/setup.sh
@@ -243,56 +243,12 @@ then
 	}
 
 
-	##�VirtualBox stuff
-	#oxivbox-addonsupdate
-	export OXISCRIPTSFUNCTIONS="$OXISCRIPTSFUNCTIONS:ox-vbox-client-addonsupdate"
-	ox-vbox-client-addonsupdate () {
-		if [ "$1" == "--help" ]; then
-			echo "updates vbox client addons"
-			return 0
-		fi
-
-		if [ "$(uname -m)" = "i686" ];
-		then
-			MTYPE="x86"
-		elif [ "$(uname -m)" = "x86_64" ];
-		then
-			MTYPE="amd64"
-		fi
-		echo -e "Machine type: $MTYPE"
-
-		if [ -n "$( which apt-get 2>/dev/null )" ]; then
-			echo -e "You are on a Debian system. Automatically installing needed packages."
-			apt-get -y install build-essential linux-headers-$(uname -r)
-		else
-			echo -e "You are NOT on a Debian system. Please check for all needed dependencies!"
-		fi
-
-		mount /cdrom
-		if [ -f /cdrom/VBoxLinuxAdditions-$MTYPE.run ];
-		then
-			cp /cdrom/VBoxLinuxAdditions-$MTYPE.run /tmp
-			/tmp/VBoxLinuxAdditions-$MTYPE.run
-		else
-			echo -e "Unable to find the files. Please set the CDROM to the vbox guest additions cd iso."
-		fi
-
-		umount /cdrom
-
-		echo -e "\nPlease press Ctrl+C within the next 30 seconds to NOT reboot your system!"
-		sleep 30 && reboot && exit
-	}
 fi
 
 # Load user functions
 if [ -f "/etc/oxiscripts/user/init.sh" ];
 then
 	. "/etc/oxiscripts/user/init.sh"
-fi
-
-if [ ! -z "$( which VBoxManage 2>/dev/null )" ];
-then
-	. /etc/oxiscripts/virtualbox.sh
 fi
 
 # Load variables

@@ -7,8 +7,6 @@
 
 
 # SETUP!
-# A lot of this file is copied from the gentoo bashrc file from
-# https://gitweb.gentoo.org/repo/gentoo.git/tree/app-shells/bash/files/bashrc
 
 # Test for an interactive shell.  There is no need to set anything
 # past this point for scp and rcp, and it's important to refrain from
@@ -109,7 +107,7 @@ if ${use_color} ; then
 	#BSD#@export CLICOLOR=1
 	#GNU#@alias ls='ls --color=auto'
 	alias grep='grep --colour=auto'
-	alias egrep='egrep --colour=auto'
+	alias grep -E='grep -E --colour=auto'
 	alias fgrep='fgrep --colour=auto'
 else
 	if [[ ${EUID} == 0 ]] ; then
@@ -154,7 +152,7 @@ oxiscripts-update () {
 		echo -e "${BLUE}OK${NC}"
 
 		chmod +x /tmp/$(basename $OXIMIRROR)
-		export $(egrep '^INSTALLOXIRELEASE=.*$' /tmp/$(basename $OXIMIRROR))
+		export $(grep -E '^INSTALLOXIRELEASE=.*$' /tmp/$(basename $OXIMIRROR))
 		echo -e "Actual Release:\t$OXIRELEASE | New Release:\t$INSTALLOXIRELEASE"
 
 		if [ "$OXIRELEASE" -lt "$INSTALLOXIRELEASE" ]; then
@@ -262,45 +260,6 @@ oxireplace () {
 unset use_color safe_term match_lhs
 
 # changes made by oxi
-
-## VirtualBox stuff
-#oxivbox-addonsupdate
-oxivbox-addonsupdate () {
-	if [ "$(uname -m)" = "i686" ];
-	then
-		MTYPE="x86"
-	elif [ "$(uname -m)" = "x86_64" ];
-	then
-		MTYPE="amd64"
-	fi
-	echo -e "Machine type: $MTYPE"
-
-	if [ -n "$(which apt-get)" ]; then
-		echo -e "You are on a Debian system. Automatically installing needed packages."
-		apt-get -y install build-essential linux-headers-$(uname -r)
-	else
-		echo -e "You are NOT on a Debian system. Please check for all needed dependencies!"
-	fi
-
-	mount /cdrom
-	if [ -f /cdrom/VBoxLinuxAdditions-$MTYPE.run ];
-	then
-		cp /cdrom/VBoxLinuxAdditions-$MTYPE.run /tmp
-		/tmp/VBoxLinuxAdditions-$MTYPE.run
-	else
-		echo -e "Unable to find the files. Please set the CDROM to the vbox guest additions cd iso."
-	fi
-
-	umount /cdrom
-
-	echo -e "\nPlease press Ctrl+C within the next 30 seconds to NOT reboot your system!"
-	sleep 30 && reboot && exit
-}
-
-if [ ! -z "$(which VBoxManage)" ];
-then
-	. /etc/oxiscripts/virtualbox.sh
-fi
 
 
 # Load variables

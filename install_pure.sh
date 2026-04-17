@@ -29,9 +29,6 @@ then
 	if [ -n "$( which apt-get 2>/dev/null )" ];
 	then
 		apt-get install lsb-release -qy || exit 1
-	elif [ -n "$( which emerge 2>/dev/null )" ];
-	then
-		emerge lsb-release -av || exit 1
 	else
 		echo -e "\n${RED}Unable to install lsb_release${NC}"
 		exit 1
@@ -43,14 +40,8 @@ else
 		Debian|Raspbian|Ubuntu|Linuxmint)
 			LSBID="debian"
 		;;
-		Gentoo)
-			LSBID="gentoo"
-		;;
-#		RedHatEnterpriseServer|CentOS)
-#			LSBID="redhat"
-#		;;
 		*)
-			echo -e "${RED}Unsupported distribution: $LSBID${NC}; or lsb_release not found."
+			echo -e "${RED}Unsupported distribution: $(lsb_release -is)${NC}; or lsb_release not found."
 			exit 1
 		;;
 	esac
@@ -59,18 +50,8 @@ else
 fi
 
 if [ -z "$( which uudecode 2>/dev/null )" ]; then
-	if [ "$LSBID" == "debian" ];
-	then
-		echo -e "${RED}Installing uudecode (apt-get install sharutils)${NC}"
-		apt-get install sharutils -qy || exit 1
-	elif [ "$LSBID" == "gentoo" ];
-	then
-		echo -e "${RED}Installing uudecode (sharutils)${NC}"
-		emerge sharutils -av || exit 1
-	else
-		echo -e "\n${RED}Unable to install uuencode${NC}"
-		exit 1
-	fi
+	echo -e "${RED}Installing uudecode (apt-get install sharutils)${NC}"
+	apt-get install sharutils -qy || exit 1
 fi
 
 echo -e "${cyan}Creating ${CYAN}$TARGETDIR${cyan}: ${NC}\c"
@@ -78,7 +59,6 @@ echo -e "${cyan}Creating ${CYAN}$TARGETDIR${cyan}: ${NC}\c"
 	mkdir -p $TARGETDIR/install
 	mkdir -p $TARGETDIR/jobs
 	mkdir -p $TARGETDIR/debian
-	mkdir -p $TARGETDIR/gentoo
 	mkdir -p $TARGETDIR/user
 
 	# system dirs
@@ -138,13 +118,9 @@ mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
 
 # mv $TARGETDIR/install/backup.sh $TARGETDIR/backup.sh
 mv $TARGETDIR/install/init.sh $TARGETDIR/init.sh
-mv $TARGETDIR/install/virtualbox.sh $TARGETDIR/virtualbox.sh
 
 mv $TARGETDIR/install/debian/* $TARGETDIR/debian
 rmdir $TARGETDIR/install/debian
-
-mv $TARGETDIR/install/gentoo/* $TARGETDIR/gentoo
-rmdir $TARGETDIR/install/gentoo
 
 mv $TARGETDIR/install/user/* $TARGETDIR/user
 rmdir $TARGETDIR/install/user
@@ -173,11 +149,9 @@ echo -e "\n${cyan}Setting permissions: \c"
 	chmod 640 $TARGETDIR/*.sh
 	chmod 755 $TARGETDIR/init.sh
 	chmod 644 $TARGETDIR/functions.sh
-	chmod 644 $TARGETDIR/virtualbox.sh
 	chmod 644 $TARGETDIR/setup.sh
 	chmod -R 750 $TARGETDIR/jobs/
 	chmod -R 755 $TARGETDIR/debian/
-	chmod -R 755 $TARGETDIR/gentoo/
 	chmod -R 755 $TARGETDIR/user/
 
 	chown -R root:root $TARGETDIR
@@ -238,8 +212,7 @@ echo -e "  ${cyan}Activating daily backup cleanup (saves a lot of space!): \c"
 echo -e "${CYAN}Done${NC}"
 
 if [ $(which ejabberdctl 2>/dev/null ) ]; then
-	echo -e "  ${CYAN}Found ejabberd, installing daily backup and weekly avatar cleanup${NC}"
-	ln -sf $TARGETDIR/jobs/cleanup-avatars.sh /etc/cron.weekly/cleanup-avatars
+	echo -e "  ${CYAN}Found ejabberd, installing daily backup${NC}"
 	ln -sf $TARGETDIR/jobs/backup-ejabberd.sh /etc/cron.daily/backup-ejabberd
 fi
 
@@ -319,13 +292,7 @@ echo -e "${NC}"
 
 if [ "$doit" == "1" ];
 then
-	if [ "$LSBID" == "debian" ];
-	then
-		apt-get install -qy $install
-	elif [ "$LSBID" == "gentoo" ];
-	then
-		emerge $install -av
-	fi
+	apt-get install -qy $install
 fi
 
 echo -e "\n${BLUE}Everything done.${NC}\n"
