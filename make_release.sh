@@ -18,8 +18,7 @@ echo -e "Removing temp files in $OXIRELEASEDIR: \c"
 	rm $OXIRELEASEDIR/setup_pure.sh
 	rm $OXIRELEASEDIR/install_pure.sh
 	rm $OXIRELEASEDIR/make_release.sh
-	rm $OXIRELEASEDIR/install.sh 2>&1 
-	rm $OXIRELEASEDIR/install.sh.md5 2>&1 
+	rm -f $OXIRELEASEDIR/install.sh $OXIRELEASEDIR/install.sh.sha256
 echo -e "Done\n"
 
 echo -e "Creating oxiuserscripts.tar.gz2: \c"
