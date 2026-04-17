@@ -1,40 +1,10 @@
 #!/bin/bash
 . /etc/oxiscripts/backup.sh
 
-case "$(lsb_release -is)" in
-	Debian|Ubuntu|Raspbian)
-		LSBID="debian"
-	;;
-	Gentoo)
-		LSBID="gentoo"
-	;;
-#		RedHatEnterpriseServer|CentOS)
-#			LSBID="redhat"
-#		;;
-esac
-
-#If we are on a debian based system, backup the installed packages
-if [ "$LSBID" == "debian" ];
-then
-	# Debian systems backup
-
-	# backup list of installed packages
-	/usr/bin/dpkg --get-selections > /tmp/dpkg-selections
-	backup /tmp/dpkg-selections system
-	rm /tmp/dpkg-selections
-
-elif [ "$LSBID" == "gentoo" ];
-then
-	# Gentoo systems backup
-
-	# backup world file
-	backup /var/lib/portage/world system
-
-	# backup kernel config
-	zcat /proc/config.gz > /tmp/kernel-config-$(uname -r)
-	backup /tmp/kernel-config-$(uname -r) system
-	rm /tmp/kernel-config-$(uname -r)
-fi
+# backup list of installed packages
+/usr/bin/dpkg --get-selections > /tmp/dpkg-selections
+backup /tmp/dpkg-selections system
+rm /tmp/dpkg-selections
 
 # Mount /boot before backup?
 needed="$(grep "/boot" /etc/fstab | egrep -v "^#.*/boot.*" | awk '{ print $2 }')"

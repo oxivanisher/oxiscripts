@@ -1,7 +1,7 @@
 #!/bin/bash
 # Debian init script
 
-# Load gentoo like PS1
+# Setup PS1
 
 # Change the window title of X terminals
 case ${TERM} in
