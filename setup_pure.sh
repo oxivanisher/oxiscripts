@@ -42,7 +42,6 @@ mountbackup () {
     # examples:
     # NFS	MOUNTO=$(mount -t nfs 192.168.1.1:/path/to/backup $BACKUPDIR 2>&1)
     # FOLDER	MOUNTO=""
-    # VBOX SF   MOUNTO=$(mount.vboxsf backup $BACKUPDIR 2>&1)
     MOUNTO=""
 }
 
