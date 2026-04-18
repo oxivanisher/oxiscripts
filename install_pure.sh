@@ -208,7 +208,7 @@ echo -e "  ${cyan}Activating daily system, ~/scripts and ~/bin backup: \c"
 echo -e "${CYAN}Done${NC}"
 
 echo -e "  ${cyan}Activating daily backup cleanup (saves a lot of space!): \c"
-	ln -sf $TARGETDIR/jobs/backup-cleanup.sh /etc/cron.daily/backup-Z98-cleanup
+	ln -sf $TARGETDIR/jobs/backup-cleanup.sh /etc/cron.daily/backup-z98-cleanup
 echo -e "${CYAN}Done${NC}"
 
 if [ $(which ejabberdctl 2>/dev/null ) ]; then
